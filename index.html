@@ -763,12 +763,12 @@
     <p class="helper" id="cloud-account-status" role="status" aria-live="polite">بياناتك محفوظة محليًا على هذا الجهاز فقط حتى تهيئة Firebase وتسجيل الدخول.</p>
   </dialog>
 
-  <script src="vendor/firebase-app-compat.js"></script>
-  <script src="vendor/firebase-auth-compat.js"></script>
-  <script src="vendor/firebase-firestore-compat.js"></script>
-  <script src="vendor/mammoth.browser.min.js"></script>
-  <script src="vendor/pdf.min.js"></script>
-  <script src="vendor/tesseract.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <script src="https://unpkg.com/tesseract.js@5.0.5/dist/tesseract.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script>
     (() => {
       "use strict";
@@ -1953,15 +1953,15 @@
         return [...new Set(points)].slice(0, 10);
       }
       async function getProjectOcrWorker(onProgress) {
-        if (!window.Tesseract?.createWorker) throw new Error("مكتبة OCR المحلية غير متاحة. تأكد من وجود ملفات مجلد vendor.");
+        if (!window.Tesseract?.createWorker) throw new Error("تعذر تحميل مكتبة OCR من CDN. تحقق من اتصال الإنترنت وسياسة تحميل السكريبتات.");
         if (!ocrWorkerPromise) {
           ocrWorkerPromise = window.Tesseract.createWorker("eng+ara", window.Tesseract.OEM.LSTM_ONLY, {
-            workerPath: new URL("vendor/worker.min.js", document.baseURI).href,
-            corePath: new URL("vendor/tesseract-core-simd-lstm.wasm.js", document.baseURI).href,
-            langPath: new URL("vendor/tessdata/", document.baseURI).href,
-            gzip: false,
+            workerPath: "https://unpkg.com/tesseract.js@5.0.5/dist/worker.min.js",
+            corePath: "https://unpkg.com/tesseract.js-core@5.0.0/tesseract-core-simd-lstm.wasm.js",
+            langPath: "https://tessdata.projectnaptha.com/4.0.0/",
+            gzip: true,
             cacheMethod: "none",
-            workerBlobURL: false,
+            workerBlobURL: true,
             logger: message => {
               if (message.status) onProgress(`${message.status}${message.progress ? ` · ${Math.round(message.progress * 100)}%` : ""}`);
             }
@@ -1978,8 +1978,8 @@
         return result.data.text;
       }
       async function extractPdfProjectText(file, onProgress) {
-        if (!window.pdfjsLib?.getDocument) throw new Error("مكتبة PDF المحلية غير متاحة. تأكد من وجود vendor/pdf.min.js.");
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("vendor/pdf.worker.min.js", document.baseURI).href;
+        if (!window.pdfjsLib?.getDocument) throw new Error("تعذر تحميل مكتبة PDF من CDN. تحقق من اتصال الإنترنت وسياسة تحميل السكريبتات.");
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
         const pdf = await window.pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
         const pages = [];
         for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
@@ -2020,7 +2020,7 @@
         const extension = file.name.split(".").pop().toLocaleLowerCase();
         if (extension === "xlsx") return readExcelRows(file);
         if (extension === "docx") {
-          if (!window.mammoth?.extractRawText) throw new Error("مكتبة Word المحلية غير متاحة. تأكد من وجود vendor/mammoth.browser.min.js.");
+          if (!window.mammoth?.extractRawText) throw new Error("تعذر تحميل مكتبة Word من CDN. تحقق من اتصال الإنترنت وسياسة تحميل السكريبتات.");
           const result = await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
           return result.value;
         }
