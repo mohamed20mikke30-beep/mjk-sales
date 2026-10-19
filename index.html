@@ -805,10 +805,10 @@
       let cloudInitPromise = null;
       let cloudApplyingRemote = false;
       let cloudSyncInProgress = false;
-      let cloudSyncRequested = false;
       let cloudInitialServerSnapshot = false;
       let cloudMergeQueue = Promise.resolve();
-      let cloudSyncTimer = 0;
+      const cloudQueuedKeys = new Set();
+      const cloudWritingKeys = new Set();
       let cloudLastError = "";
       let cloudRemoteRecords = new Map();
       let cloudSyncMetadata = loadCloudSyncMetadata();
@@ -900,28 +900,32 @@
         records.set(cloudRecordKey("meta", "app"), { kind: "meta", id: "app", data: meta });
         return records;
       }
+      function serializeCloudRecords(records) {
+        return new Map([...records].map(([key, record]) => [key, JSON.stringify(record)]));
+      }
       function captureLocalCloudChanges() {
         if (cloudApplyingRemote) return;
         const current = collectLocalCloudRecords();
         const keys = new Set([...lastLocalRecords.keys(), ...current.keys()]);
-        let changed = false;
+        const changedKeys = new Set();
         keys.forEach(key => {
           const before = lastLocalRecords.get(key);
           const after = current.get(key);
-          if (JSON.stringify(before) === JSON.stringify(after)) return;
+          const serializedAfter = JSON.stringify(after);
+          if (before === serializedAfter) return;
           const previousVersion = Number(cloudSyncMetadata.versions[key]) || 0;
           const timestamp = Math.max(Date.now(), previousVersion + 1);
           cloudSyncMetadata.versions[key] = timestamp;
           if (after) delete cloudSyncMetadata.tombstones[key];
           else cloudSyncMetadata.tombstones[key] = timestamp;
-          changed = true;
+          changedKeys.add(key);
         });
-        lastLocalRecords = current;
-        if (changed) {
-          if (persistCloudSyncMetadata()) scheduleCloudSync();
+        lastLocalRecords = serializeCloudRecords(current);
+        if (changedKeys.size) {
+          if (persistCloudSyncMetadata()) scheduleCloudSync(changedKeys);
         }
       }
-      lastLocalRecords = collectLocalCloudRecords();
+      lastLocalRecords = serializeCloudRecords(collectLocalCloudRecords());
 
       function persistAppState(showError = true) {
         try {
@@ -1112,7 +1116,7 @@
         } finally {
           cloudApplyingRemote = false;
         }
-        lastLocalRecords = collectLocalCloudRecords();
+        lastLocalRecords = serializeCloudRecords(collectLocalCloudRecords());
         persistCloudSyncMetadata();
         renderLeads();
         populateAppointmentClients();
@@ -1122,7 +1126,7 @@
         renderLookup();
         renderScripts();
         if (typeof runCleaner === "function" && appState.rawContacts) runCleaner(false, false);
-        lastLocalRecords = collectLocalCloudRecords();
+        lastLocalRecords = serializeCloudRecords(collectLocalCloudRecords());
         return true;
       }
       async function reconcileCloudRecords(remoteRecords) {
@@ -1141,7 +1145,23 @@
           const tombstoneVersion = Number(cloudSyncMetadata.tombstones[key]) || 0;
           const effectiveLocalVersion = Math.max(localVersion, tombstoneVersion);
           if (remote) {
-            if (effectiveLocalVersion > remote.updatedAt) {
+            const pendingWrite = cloudQueuedKeys.has(key) || cloudWritingKeys.has(key);
+            const remoteMatchesLocal = local
+              ? !remote.deleted && JSON.stringify(local.data) === JSON.stringify(remote.data)
+              : Boolean(remote.deleted);
+            if (pendingWrite && remoteMatchesLocal) {
+              cloudSyncMetadata.versions[key] = remote.updatedAt;
+              delete cloudSyncMetadata.tombstones[key];
+              cloudQueuedKeys.delete(key);
+              setCloudRecordInMap(mergedRecords, key, remote);
+              return;
+            }
+            if (effectiveLocalVersion > remote.updatedAt || pendingWrite) {
+              if (pendingWrite) {
+                const nextVersion = Math.max(effectiveLocalVersion, remote.updatedAt + 1);
+                if (local) cloudSyncMetadata.versions[key] = nextVersion;
+                else cloudSyncMetadata.tombstones[key] = nextVersion;
+              }
               pushKeys.add(key);
               return;
             }
@@ -1188,13 +1208,36 @@
             });
           } else root.data = record.data;
         }
-        batch.set(rootReference, root);
-        await batch.commit();
+        if (!root.chunkCount && previous) {
+          const update = { ...root };
+          if (deleted) update.data = window.firebase.firestore.FieldValue.delete();
+          try {
+            await rootReference.update(update);
+          } catch (error) {
+            if (error.code !== "not-found") throw error;
+            await rootReference.set(root);
+          }
+          if ((previous.chunkCount || 0) > 0) {
+            for (let start = 0; start < previous.chunkCount; start += 450) {
+              const cleanupBatch = cloudDb.batch();
+              const end = Math.min(previous.chunkCount, start + 450);
+              for (let index = start; index < end; index++) {
+                cleanupBatch.delete(collection.doc(cloudChunkId(key, index)));
+              }
+              await cleanupBatch.commit();
+            }
+          }
+        } else {
+          batch.set(rootReference, root);
+          await batch.commit();
+        }
         if (deleted) cloudRemoteRecords.set(key, { kind: root.recordKind, id: root.id, updatedAt: version, deleted: true, chunkCount: 0 });
         else cloudRemoteRecords.set(key, { ...record, updatedAt: version, deleted: false, chunkCount: root.chunkCount });
       }
       async function pushCloudRecords(onlyKeys) {
-        if (!cloudUser || cloudAccountMismatch || !cloudDb || !onlyKeys.size) return;
+        onlyKeys.forEach(key => cloudQueuedKeys.add(key));
+        if (!cloudQueuedKeys.size) return;
+        if (!cloudUser || cloudAccountMismatch || !cloudDb) return;
         if (!navigator.onLine) {
           setCloudStatus("أوفلاين · التغييرات محفوظة محليًا", "pending");
           return;
@@ -1204,50 +1247,68 @@
           return;
         }
         if (cloudSyncInProgress) {
-          cloudSyncRequested = true;
           return;
         }
         cloudSyncInProgress = true;
         setCloudStatus("جاري حفظ التغييرات السحابية…", "pending");
+        let writingKeys = [];
+        let syncFailed = false;
         try {
-          const localRecords = collectLocalCloudRecords();
-          for (const key of onlyKeys) {
-            const local = localRecords.get(key);
-            const tombstoneVersion = Number(cloudSyncMetadata.tombstones[key]) || 0;
-            const version = Math.max(Number(cloudSyncMetadata.versions[key]) || 0, tombstoneVersion);
-            const remote = cloudRemoteRecords.get(key);
-            if (remote && remote.updatedAt > version) continue;
-            if (local && remote && remote.updatedAt === version && !remote.deleted) continue;
-            await writeCloudRecord(key, local, version || Date.now(), !local);
+          while (cloudQueuedKeys.size && navigator.onLine) {
+            writingKeys = [...cloudQueuedKeys];
+            writingKeys.forEach(key => cloudQueuedKeys.delete(key));
+            writingKeys.forEach(key => cloudWritingKeys.add(key));
+            const localRecords = new Map([...collectLocalCloudRecords()].map(([key, value]) => [
+              key, { ...value, data: JSON.parse(JSON.stringify(value.data)) }
+            ]));
+            for (const key of writingKeys) {
+              const local = localRecords.get(key);
+              const tombstoneVersion = Number(cloudSyncMetadata.tombstones[key]) || 0;
+              let version = Math.max(Number(cloudSyncMetadata.versions[key]) || 0, tombstoneVersion);
+              const remote = cloudRemoteRecords.get(key);
+              const remoteMatchesLocal = remote && (local
+                ? !remote.deleted && JSON.stringify(local.data) === JSON.stringify(remote.data)
+                : remote.deleted);
+              if (remoteMatchesLocal) continue;
+              if (remote && remote.updatedAt >= version) {
+                version = remote.updatedAt + 1;
+                if (local) cloudSyncMetadata.versions[key] = version;
+                else cloudSyncMetadata.tombstones[key] = version;
+                if (!persistCloudSyncMetadata()) throw new Error("تعذر حفظ إصدار المزامنة الجديد محليًا قبل إرساله.");
+              }
+              await writeCloudRecord(key, local, version || Date.now(), !local);
+            }
+            writingKeys.forEach(key => cloudWritingKeys.delete(key));
+            writingKeys = [];
           }
           cloudLastError = "";
-          setCloudStatus(`🟢 متزامن · ${cloudUser.email || "الحساب"}`, "synced");
-          byId("cloud-account-status").textContent = `تم حفظ التغييرات في حساب ${cloudUser.email || cloudUser.uid}.`;
+          if (!cloudQueuedKeys.size) {
+            setCloudStatus(`🟢 متزامن · ${cloudUser.email || "الحساب"}`, "synced");
+            byId("cloud-account-status").textContent = `تم حفظ التغييرات في حساب ${cloudUser.email || cloudUser.uid}.`;
+          }
           persistCloudSyncMetadata();
         } catch (error) {
+          syncFailed = true;
+          writingKeys.forEach(key => {
+            cloudWritingKeys.delete(key);
+            cloudQueuedKeys.add(key);
+          });
           cloudLastError = error.message || "تعذر حفظ البيانات في Firebase.";
           console.error("Firebase cloud sync failed:", error);
           setCloudStatus("تعذر الحفظ السحابي · البيانات المحلية محفوظة", "error");
           byId("cloud-account-status").textContent = `تعذر الحفظ في Firebase: ${cloudLastError}`;
         } finally {
           cloudSyncInProgress = false;
-          if (cloudSyncRequested) {
-            cloudSyncRequested = false;
-            scheduleCloudSync();
+          if (cloudQueuedKeys.size && cloudUser && !cloudAccountMismatch) {
+            if (!syncFailed && navigator.onLine && cloudInitialServerSnapshot) void pushCloudRecords(new Set());
+            else if (!syncFailed) setCloudStatus("تغييرات محفوظة محليًا بانتظار الاتصال السحابي", "pending");
           }
         }
       }
-      function scheduleCloudSync() {
-        if (!cloudUser) return;
+      function scheduleCloudSync(changedKeys = new Set()) {
+        if (!cloudUser || !changedKeys.size) return;
         setCloudStatus(navigator.onLine ? "🟠 توجد تغييرات بانتظار المزامنة" : "أوفلاين · التغييرات محفوظة محليًا", "pending");
-        window.clearTimeout(cloudSyncTimer);
-        cloudSyncTimer = window.setTimeout(() => {
-          const pending = new Set([
-            ...collectLocalCloudRecords().keys(),
-            ...Object.keys(cloudSyncMetadata.tombstones)
-          ]);
-          pushCloudRecords(pending);
-        }, 250);
+        void pushCloudRecords(changedKeys);
       }
       function updateCloudAccountUi() {
         const signedIn = Boolean(cloudUser);
