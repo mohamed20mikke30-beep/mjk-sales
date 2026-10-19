@@ -397,7 +397,7 @@
       </div>
       <div class="header-actions">
         <div class="header-status"><span class="status-light"></span><span>البيانات محفوظة على هذا الجهاز</span></div>
-        <button class="cloud-status" id="cloud-sync-open" type="button" aria-haspopup="dialog" aria-controls="cloud-sync-dialog"><span id="cloud-status-icon">☁️</span><span id="cloud-status-text">محلي فقط · إعداد المزامنة</span></button>
+        <button class="cloud-status" id="cloud-sync-open" type="button" aria-haspopup="dialog" aria-controls="cloud-sync-dialog"><span id="cloud-status-icon">☁️</span><span id="cloud-status-text">Firebase جاهز · سجّل الدخول للمزامنة</span></button>
         <button class="btn btn-reset" id="reset-app" type="button" title="يمسح بيانات تطبيق MJK المحلية من هذا المتصفح">
           <span aria-hidden="true">⌫</span>
           <span class="reset-long">إعادة ضبط المصنع</span>
@@ -741,15 +741,18 @@
   </dialog>
   <dialog class="cloud-dialog" id="cloud-sync-dialog" aria-labelledby="cloud-sync-title">
     <div class="archive-item-head"><h2 id="cloud-sync-title">تسجيل الدخول والمزامنة السحابية</h2><button class="btn btn-quiet small-btn" id="close-cloud-dialog" type="button">إغلاق</button></div>
-    <p class="helper">تعمل قاعدة البيانات المحلية أولًا. بعد تسجيل الدخول، تتم مزامنة السجلات مع مساحة Firebase الخاصة بحسابك، وتبقى التغييرات قابلة للاستخدام دون اتصال.</p>
+    <p class="helper">إعداد Firebase مضمّن مسبقًا. سجّل الدخول مباشرة للاتصال؛ تظل قاعدة البيانات المحلية فعالة دون اتصال وتتم المزامنة بعد عودة الإنترنت.</p>
     <div class="cloud-sync-note">
-      ١) أنشئ مشروع Firebase وأضف تطبيق Web. ٢) فعّل Authentication → Email/Password وأنشئ Firestore Database. ٣) انشر قواعد الملف <strong>firestore.rules</strong> على Firebase. ٤) الصق إعدادات تطبيق Web أدناه.
+      يلزم تفعيل Authentication → Email/Password وإنشاء Firestore Database ونشر قواعد الملف <strong>firestore.rules</strong> على مشروع MJK Sales.
       <br>يفضّل تقديم الصفحة عبر HTTPS أو localhost لتفعيل Firestore offline persistence. تُخزّن المرفقات على هيئة مقاطع Firestore؛ تظل الحصة المجانية محدودة بحصص Google Cloud الحالية، ولا يوجد ضمان بأن كل استخدام سيبقى مجانيًا.
     </div>
-    <form id="cloud-config-form">
-      <div class="field" style="margin-top:13px"><label for="firebase-config">إعداد تطبيق Firebase Web (JSON)</label><textarea class="control" id="firebase-config" spellcheck="false" autocomplete="off" placeholder="{&#10;  &quot;apiKey&quot;: &quot;...&quot;,&#10;  &quot;authDomain&quot;: &quot;your-project.firebaseapp.com&quot;,&#10;  &quot;projectId&quot;: &quot;your-project&quot;,&#10;  &quot;appId&quot;: &quot;1:...:web:...&quot;&#10;}"></textarea></div>
-      <div class="btn-row form-actions"><button class="btn btn-primary" type="submit">حفظ الإعدادات على هذا الجهاز</button></div>
-    </form>
+    <details class="cloud-config-advanced">
+      <summary>إعداد اختياري لمشروع Firebase مخصص</summary>
+      <form id="cloud-config-form">
+        <div class="field" style="margin-top:13px"><label for="firebase-config">إعداد تطبيق Firebase Web (JSON) — اتركه فارغًا لاستخدام إعداد MJK المضمّن</label><textarea class="control" id="firebase-config" spellcheck="false" autocomplete="off" placeholder="اختياري: أدخل إعدادات مشروع Firebase آخر هنا"></textarea></div>
+        <div class="btn-row form-actions"><button class="btn btn-primary" type="submit">حفظ الإعداد الاختياري</button></div>
+      </form>
+    </details>
     <form id="cloud-login-form" style="margin-top:15px">
       <div class="form-grid">
         <div class="field"><label for="cloud-email">البريد الإلكتروني</label><input class="control" id="cloud-email" type="email" required autocomplete="username"></div>
@@ -774,6 +777,15 @@
       const CALCULATOR_STORAGE_KEY = "mjkCalculator.v1";
       const FIREBASE_CONFIG_KEY = "mjkCloud.firebaseConfig.v1";
       const CLOUD_SYNC_META_KEY = "mjkCloud.syncMetadata.v1";
+      const DEFAULT_FIREBASE_CONFIG = Object.freeze({
+        apiKey: "AIzaSyB7f3lqbicC9M3aUC5HWd4ackTQc3fGJ64",
+        authDomain: "mjk-sales.firebaseapp.com",
+        projectId: "mjk-sales",
+        storageBucket: "mjk-sales.firebasestorage.app",
+        messagingSenderId: "1079020522128",
+        appId: "1:1079020522128:web:66fbf6ccb52f5f366be615",
+        measurementId: "G-4D3P2VSRDZ"
+      });
       const byId = id => document.getElementById(id);
       const money = new Intl.NumberFormat("ar-EG", { maximumFractionDigits: 2 });
       const integer = new Intl.NumberFormat("ar-EG", { maximumFractionDigits: 0 });
@@ -1250,16 +1262,18 @@
       }
       async function initializeCloudSync() {
         const rawConfig = localStorage.getItem(FIREBASE_CONFIG_KEY);
-        if (!rawConfig) {
-          setCloudStatus("محلي فقط · أضف إعدادات Firebase", "local");
-          return false;
+        let config = DEFAULT_FIREBASE_CONFIG;
+        try {
+          if (rawConfig) config = JSON.parse(rawConfig);
+          if (!config || typeof config !== "object" || Array.isArray(config) ||
+              ["apiKey", "authDomain", "projectId", "appId"].some(key => typeof config[key] !== "string" || !config[key].trim())) {
+            throw new Error("يجب توفير apiKey وauthDomain وprojectId وappId صالحين.");
+          }
         }
-        let config;
-        try { config = JSON.parse(rawConfig); }
         catch (error) {
-          console.error("Saved Firebase configuration is invalid JSON:", error);
+          console.error("Firebase configuration is invalid:", error);
           setCloudStatus("إعدادات Firebase غير صالحة", "error");
-          byId("cloud-account-status").textContent = "تحقق من صيغة إعدادات Firebase المحفوظة، ثم احفظها مجددًا.";
+          byId("cloud-account-status").textContent = `تعذر قراءة إعداد Firebase: ${error.message}. أزل الإعداد الاختياري أو احفظ JSON صالحًا.`;
           return false;
         }
         if (!window.firebase?.initializeApp || !window.firebase?.firestore) {
@@ -1299,7 +1313,10 @@
                 cloudListener = null;
                 cloudRemoteRecords.clear();
                 cloudInitialServerSnapshot = false;
-                setCloudStatus(navigator.onLine ? "إعداد محفوظ · البيانات محلية" : "أوفلاين · البيانات محفوظة محليًا", navigator.onLine ? "local" : "pending");
+                setCloudStatus(navigator.onLine ? "Firebase جاهز · سجّل الدخول للمزامنة" : "أوفلاين · البيانات محفوظة محليًا", navigator.onLine ? "local" : "pending");
+                byId("cloud-account-status").textContent = navigator.onLine
+                  ? "إعداد Firebase جاهز. سجّل الدخول للبدء بمزامنة بيانات هذا الجهاز."
+                  : "لا يوجد اتصال بالإنترنت. بياناتك محفوظة محليًا وستتم المزامنة بعد تسجيل الدخول وعودة الاتصال.";
                 resolve(true);
                 return;
               }
@@ -1373,12 +1390,17 @@
       byId("close-cloud-dialog").addEventListener("click", () => byId("cloud-sync-dialog").close());
       byId("cloud-config-form").addEventListener("submit", async event => {
         event.preventDefault();
-        let config;
+        const rawConfig = byId("firebase-config").value.trim();
         try {
-          config = JSON.parse(byId("firebase-config").value);
-          if (!config || typeof config !== "object" || Array.isArray(config) ||
-              ["apiKey", "authDomain", "projectId", "appId"].some(key => typeof config[key] !== "string" || !config[key].trim())) {
-            throw new Error("يجب إدخال apiKey وauthDomain وprojectId وappId من إعداد تطبيق Firebase Web.");
+          if (rawConfig) {
+            const config = JSON.parse(rawConfig);
+            if (!config || typeof config !== "object" || Array.isArray(config) ||
+                ["apiKey", "authDomain", "projectId", "appId"].some(key => typeof config[key] !== "string" || !config[key].trim())) {
+              throw new Error("يجب إدخال apiKey وauthDomain وprojectId وappId من إعداد تطبيق Firebase Web.");
+            }
+            localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(config));
+          } else {
+            localStorage.removeItem(FIREBASE_CONFIG_KEY);
           }
         } catch (error) {
           byId("cloud-account-status").textContent = `إعداد غير صالح: ${error.message}`;
@@ -1386,10 +1408,11 @@
           return;
         }
         try {
-          localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(config));
-          byId("cloud-account-status").textContent = "حُفظ إعداد Firebase على هذا الجهاز.";
           if (!await initializeCloudSync()) return;
-          showToast("تم حفظ إعدادات Firebase محليًا. سجّل الدخول لتفعيل المزامنة.");
+          byId("cloud-account-status").textContent = rawConfig
+            ? "حُفظ إعداد Firebase المخصص على هذا الجهاز."
+            : "تمت استعادة إعداد Firebase المضمّن في التطبيق.";
+          showToast(rawConfig ? "تم حفظ إعداد Firebase المخصص." : "تمت استعادة إعداد Firebase الافتراضي.");
         } catch (error) {
           console.error("Could not initialize the configured Firebase project:", error);
           byId("cloud-account-status").textContent = `تعذر تهيئة Firebase: ${error.message || error.code}.`;
@@ -1443,7 +1466,7 @@
       });
       window.addEventListener("online", () => {
         if (!cloudUser) {
-          setCloudStatus(localStorage.getItem(FIREBASE_CONFIG_KEY) ? "إعداد محفوظ · البيانات محلية" : "محلي فقط · أضف إعدادات Firebase", "local");
+          setCloudStatus("Firebase جاهز · سجّل الدخول للمزامنة", "local");
           return;
         }
         setCloudStatus("عاد الاتصال · جارٍ مزامنة التغييرات", "pending");
@@ -3317,15 +3340,11 @@
       renderArchive();
       renderScripts();
       renderAnalytics();
-      if (localStorage.getItem(FIREBASE_CONFIG_KEY)) {
-        initializeCloudSync().catch(error => {
-          console.error("Could not restore Firebase cloud sync:", error);
-          setCloudStatus("تعذر استعادة الاتصال السحابي", "error");
-          byId("cloud-account-status").textContent = `تعذر استعادة اتصال Firebase: ${error.message || error.code}.`;
-        });
-      } else {
-        setCloudStatus("محلي فقط · أضف إعدادات Firebase", "local");
-      }
+      initializeCloudSync().catch(error => {
+        console.error("Could not initialize Firebase cloud sync:", error);
+        setCloudStatus("تعذر تهيئة Firebase", "error");
+        byId("cloud-account-status").textContent = `تعذر تهيئة Firebase: ${error.message || error.code}.`;
+      });
       if (appState.cleanerPreferences) {
         byId("batch-size").value = String(clamp(Number(appState.cleanerPreferences.batchSize) || 50, 1, 500));
         if ([...byId("phone-region").options].some(option => option.value === appState.cleanerPreferences.region)) {
