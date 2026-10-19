@@ -1,0 +1,66 @@
+{
+  "format": "MJK-SALES-TOOLS-BACKUP",
+  "version": 2,
+  "exportedAt": "2026-10-18T16:10:44.672Z",
+  "leads": [
+    {
+      "id": "l1",
+      "name": "Client",
+      "phone": "+201012345678",
+      "project": "Project",
+      "interest": "hot",
+      "status": "new",
+      "expectedCommission": 25000
+    }
+  ],
+  "appState": {
+    "lookups": [
+      {
+        "id": "x"
+      }
+    ],
+    "appointments": [
+      {
+        "id": "a",
+        "title": "Visit",
+        "date": "2026-10-20",
+        "time": "11:00",
+        "done": false
+      }
+    ],
+    "customScripts": [],
+    "archive": [
+      {
+        "id": "file",
+        "name": "receipt.html",
+        "type": "receipt",
+        "content": "sample",
+        "mime": "text/html",
+        "savedAt": "2026-10-18T16:10:43.708Z"
+      }
+    ],
+    "cleanerBatchRuns": 2,
+    "cleanerRows": [],
+    "rawContacts": "raw",
+    "cleanerPreferences": {
+      "batchSize": 50,
+      "region": "EG"
+    },
+    "lastCleanerStats": {
+      "duplicates": 0,
+      "invalid": 1,
+      "batches": 0
+    }
+  },
+  "settings": {
+    "calculator": {
+      "price": "777000",
+      "downPct": "15",
+      "years": "3",
+      "commissionPct": "2",
+      "closerPct": "60",
+      "frequency": "quarterly",
+      "startDate": "2026-11-01"
+    }
+  }
+}
