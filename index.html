@@ -53,6 +53,7 @@
     .brand-subtitle { margin: 1px 0 0; color: var(--muted); font-size: 10px; }
     .header-status { display: flex; align-items: center; gap: 9px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 99px; color: #c3cbc7; background: var(--surface); font-size: 11px; white-space: nowrap; }
     .status-light { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(53, 194, 138, .1); }
+    .header-status.is-offline .status-light { background:#ffbd4d;box-shadow:0 0 0 4px rgba(255,190,48,.1); }
     .header-actions { display:flex;align-items:center;gap:10px; }
     .cloud-status { display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border:1px solid var(--line);border-radius:8px;color:#aeb8b3;background:var(--surface);font-size:10px;white-space:nowrap; }
     .cloud-status.is-synced { color:#a8f0c9;border-color:rgba(53,194,138,.3);background:rgba(53,194,138,.08); }
@@ -60,6 +61,46 @@
     .cloud-status.is-error { color:#ff9a9e;border-color:rgba(255,107,112,.3);background:rgba(255,107,112,.08); }
     .btn-reset { min-height:36px;padding:0 11px;color:#ff9a9e;border-color:rgba(255,107,112,.38);background:rgba(255,107,112,.1);font-size:10px; }
     .btn-reset:hover { color:#fff;background:#a9333b;border-color:#e14b55; }
+    .lead-card { transition:transform .18s ease, box-shadow .18s ease; }
+    .lead-card:hover { transform:translateY(-2px) scale(1.008);box-shadow:0 18px 42px rgba(0,0,0,.3); }
+    .role-badge,.lead-status-badge { display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border:1px solid var(--line);border-radius:99px;font-size:10px;font-weight:800; }
+    .lead-status-completed,.lead-status-won { color:#a8f0c9;border-color:rgba(53,194,138,.3);background:rgba(53,194,138,.1); }
+    .lead-status-followup,.lead-status-callback,.lead-status-contacted,.lead-status-visited,.lead-status-reserved { color:#ffd873;border-color:rgba(255,190,48,.3);background:rgba(255,190,48,.09); }
+    .lead-status-rejected,.lead-status-lost { color:#ff9a9e;border-color:rgba(255,107,112,.3);background:rgba(255,107,112,.09); }
+    .lead-status-vip { color:#d4b5ff;border-color:rgba(172,120,255,.32);background:rgba(172,120,255,.1); }
+    .connection-pill { display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid rgba(53,194,138,.3);border-radius:99px;color:#a8f0c9;background:rgba(53,194,138,.08);font-size:11px;white-space:nowrap; }
+    .connection-pill::before { content:"";width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(53,194,138,.5);animation:sync-pulse 1.8s infinite; }
+    .connection-pill.is-offline { color:#ffd873;border-color:rgba(255,190,48,.3);background:rgba(255,190,48,.08); }
+    .connection-pill.is-offline::before { background:#ffbd4d;animation:none; }
+    @keyframes sync-pulse { 70% { box-shadow:0 0 0 7px rgba(53,194,138,0); } 100% { box-shadow:0 0 0 0 rgba(53,194,138,0); } }
+    .team-grid,.pipeline-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0; }
+    .team-card,.activity-card { padding:16px;border:1px solid var(--line);border-radius:13px;background:var(--surface); }
+    .team-card strong,.activity-card strong { display:block;margin-bottom:5px; }
+    .pipeline-tabs { display:flex;gap:7px;overflow:auto;padding:4px 0 12px; }
+    .pipeline-tab { min-height:40px;padding:0 13px;white-space:nowrap; }
+    .lead-assign-control { display:flex;align-items:center;gap:8px;margin-top:9px; }
+    .lead-assign-control .control { min-height:36px;padding:6px 9px; }
+    .timeline-list { display:grid;gap:9px;max-height:60vh;overflow:auto;margin-top:14px; }
+    .timeline-entry { padding:12px;border-inline-start:3px solid var(--accent);border-radius:7px;background:var(--surface-2); }
+    .admin-note { padding:13px;border:1px solid rgba(255,190,48,.25);border-radius:10px;color:#e7d4a3;background:rgba(255,190,48,.06); }
+    .admin-subtabs { display:flex;gap:7px;overflow:auto;margin:14px 0;padding:4px 0; }
+    .admin-subtab { min-height:38px;padding:0 13px;white-space:nowrap; }
+    .admin-subpanel[hidden] { display:none; }
+    .module-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:11px;margin-top:14px; }
+    .module-card { display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:15px;border:1px solid var(--line);border-radius:12px;background:var(--surface); }
+    .module-card h4 { margin:0 0 5px;font-size:12px; }
+    .module-card p,.module-note { margin:0;color:var(--muted);font-size:10px;line-height:1.65; }
+    .module-switch { display:flex;flex:none;align-items:center;gap:8px;min-height:38px;color:#c7d0cb;font-size:10px;font-weight:800;cursor:pointer; }
+    .module-switch input { width:42px;height:23px;margin:0;accent-color:#35c28a;cursor:pointer; }
+    .module-state { display:inline-flex;margin-top:8px;padding:3px 8px;border:1px solid var(--line);border-radius:99px;color:#aeb8b3;font-size:9px; }
+    .module-state.is-on { color:#a8f0c9;border-color:rgba(53,194,138,.3);background:rgba(53,194,138,.08); }
+    .module-settings { display:grid;gap:12px;margin-top:14px; }
+    .module-settings .card { padding:15px; }
+    .module-settings textarea { min-height:82px; }
+    .module-output { overflow:auto;padding:10px;border:1px solid var(--line);border-radius:8px;background:#111414;color:#cbd4cf;font:10px/1.7 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere; }
+    .module-feature-button { color:#e8d5a8;border-color:rgba(255,190,48,.25);background:rgba(255,190,48,.06); }
+    .invoice-dialog { width:min(600px,calc(100vw - 24px));max-height:90vh;overflow:auto;padding:18px;border:1px solid #484f4c;border-radius:14px;color:var(--text);background:#171b1a;box-shadow:var(--shadow); }
+    .invoice-dialog::backdrop { background:rgba(0,0,0,.72);backdrop-filter:blur(3px); }
     .reset-short { display:none; }
     .container { width: min(1440px, 100%); margin-inline: auto; padding: 28px clamp(15px, 4vw, 58px) 60px; }
     .welcome { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin: 8px 0 22px; }
@@ -352,6 +393,12 @@
       .guide-item .btn { grid-column:2;justify-self:start; }
       .chart-bars { gap:6px; }
     }
+    @media (max-width: 680px) {
+      .connection-pill { min-height:40px;padding:0 10px;font-size:10px; }
+      .lead-actions .btn,.lead-assign-control .control,.pipeline-tab { min-height:42px; }
+      .team-grid,.pipeline-grid { grid-template-columns:1fr; }
+      .module-card { flex-direction:column; }
+    }
     @media (max-width: 420px) {
       .header-status { display: none; }
       .reset-long { display:none; }
@@ -379,6 +426,10 @@
       }
       .receipt-field strong, .receipt-heading, .receipt-notes p, .receipt-branding { color: #151515 !important; }
       .receipt-actions, .topbar, .toast { display: none !important; }
+      body.print-invoice * { visibility:hidden !important; }
+      body.print-invoice #invoice-print-preview,body.print-invoice #invoice-print-preview * { visibility:visible !important; }
+      body.print-invoice #invoice-print-preview { position:absolute;inset:0 auto auto 0;width:100%;padding:18mm;border:0;border-radius:0;color:#151515;background:#fff; }
+      body.print-invoice .invoice-print-title { color:#a66c00 !important; }
     }
   </style>
 </head>
@@ -396,7 +447,7 @@
         </div>
       </div>
       <div class="header-actions">
-        <div class="header-status"><span class="status-light"></span><span>البيانات محفوظة على هذا الجهاز</span></div>
+        <div class="header-status" id="header-live-status"><span class="status-light"></span><span id="header-live-text">البيانات محفوظة على هذا الجهاز</span></div>
         <button class="cloud-status" id="cloud-sync-open" type="button" aria-haspopup="dialog" aria-controls="cloud-sync-dialog"><span id="cloud-status-icon">☁️</span><span id="cloud-status-text">Firebase جاهز · سجّل الدخول للمزامنة</span></button>
         <button class="btn btn-reset" id="reset-app" type="button" title="يمسح بيانات تطبيق MJK المحلية من هذا المتصفح">
           <span aria-hidden="true">⌫</span>
@@ -428,6 +479,8 @@
         <button class="tab-button" id="tab-scheduler" type="button" role="tab" aria-selected="false" aria-controls="panel-scheduler" data-tab="scheduler"><span class="tab-icon">◷</span> المواعيد</button>
         <button class="tab-button" id="tab-scripts" type="button" role="tab" aria-selected="false" aria-controls="panel-scripts" data-tab="scripts"><span class="tab-icon">✎</span> السكريبتات</button>
         <button class="tab-button" id="tab-analytics" type="button" role="tab" aria-selected="false" aria-controls="panel-analytics" data-tab="analytics"><span class="tab-icon">▥</span> الإحصائيات</button>
+        <button class="tab-button" id="tab-actions" type="button" role="tab" aria-selected="false" aria-controls="panel-actions" data-tab="actions"><span class="tab-icon">📊</span> سجل الأنشطة والأكشنز</button>
+        <button class="tab-button" id="tab-admin" type="button" role="tab" aria-selected="false" aria-controls="panel-admin" data-tab="admin" hidden><span class="tab-icon">👥</span> لوحة الإدارة والتوزيع</button>
       </nav>
 
       <section class="tab-panel active" id="panel-crm" role="tabpanel" aria-labelledby="tab-crm">
@@ -728,6 +781,68 @@
           </div><div class="btn-row form-actions"><button class="btn btn-quiet" data-open-tab="crm" type="button">فتح قاعدة العملاء</button><button class="btn btn-quiet" data-open-tab="scheduler" type="button">فتح الأجندة</button></div></article>
         </div>
       </section>
+      <section class="tab-panel" id="panel-actions" role="tabpanel" aria-labelledby="tab-actions" hidden>
+        <div class="panel-head"><div><h2>سجل الأنشطة ومسار العملاء</h2><p>تُسجّل تغييرات الحالة والإجراءات في سجل تدقيق مستقل محفوظ مع العميل.</p></div><span class="role-badge" id="session-role-label">جلسة محلية</span></div>
+        <div class="pipeline-tabs" role="tablist" aria-label="مراحل مسار العملاء">
+          <button class="btn btn-secondary pipeline-tab active" type="button" data-pipeline="rejected">📁 الرافضون</button>
+          <button class="btn btn-secondary pipeline-tab" type="button" data-pipeline="vip">⭐ عملاء VIP</button>
+          <button class="btn btn-secondary pipeline-tab" type="button" data-pipeline="followup">📞 المتابعات</button>
+          <button class="btn btn-secondary pipeline-tab" type="button" data-pipeline="completed">✅ الصفقات المغلقة</button>
+        </div>
+        <div class="pipeline-grid" id="pipeline-list"></div>
+        <div class="table-empty" id="pipeline-empty"><strong>لا توجد سجلات في هذا المسار</strong></div>
+      </section>
+      <section class="tab-panel" id="panel-admin" role="tabpanel" aria-labelledby="tab-admin" hidden>
+        <div class="panel-head"><div><h2>إدارة الشركة وتوزيع العملاء</h2><p>حسابات الشركة الحالية ومؤشرات التعيين والتحويل.</p></div><button class="btn btn-primary" type="button" id="admin-add-open">＋ إضافة عميل / دفعة</button></div>
+        <p class="admin-note">إنشاء مستخدمي Firebase Auth وإدارة حقلي role وcompanyId يتم يدويًا من Firebase Console. لا تمنح الواجهة صلاحية ترقية الحسابات أو إنشاء مستخدمين؛ ستظهر هنا حسابات الوكلاء المهيأة داخل الشركة فقط.</p>
+        <div class="admin-subtabs" role="tablist" aria-label="أقسام إدارة الشركة">
+          <button class="btn btn-secondary admin-subtab active" type="button" data-admin-panel="team" aria-selected="true">👥 الفريق والتوزيع</button>
+          <button class="btn btn-secondary admin-subtab" type="button" data-admin-panel="modules" aria-selected="false">🧩 الوحدات والتكاملات</button>
+        </div>
+        <div class="admin-subpanel" id="admin-panel-team">
+        <div class="summary-grid" id="admin-summary"></div>
+        <h3 class="card-title">الفريق ومؤشرات التحويل</h3>
+        <div class="team-grid" id="team-agent-list"></div>
+        <div class="card" style="margin-top:14px"><div class="card-inner">
+          <div class="panel-head"><div><h3 class="card-title">تعيين دفعة كاملة</h3><p class="card-caption">اختر دفعة CRM ووكيلًا، ثم أسند جميع عملائها دفعة واحدة.</p></div></div>
+          <div class="form-grid"><div class="field"><label for="admin-batch-select">دفعة CRM</label><select class="control" id="admin-batch-select"></select></div><div class="field"><label for="admin-batch-agent">الوكيل</label><select class="control" id="admin-batch-agent"></select></div></div>
+          <button class="btn btn-primary form-actions" type="button" id="admin-assign-batch">تعيين الدفعة</button>
+        </div></div>
+        </div>
+        <div class="admin-subpanel" id="admin-panel-modules" hidden>
+          <div class="panel-head"><div><h3>الوحدات والتكاملات</h3><p>تُحفظ مفاتيح التشغيل على مستوى الشركة وتُطبّق فورًا على الجلسات المتصلة.</p></div><span class="role-badge" id="module-settings-status">جارٍ تحميل إعدادات الشركة</span></div>
+          <p class="admin-note">تفعيل واجهة الوحدة لا ينشئ اعتمادًا خارجيًا تلقائيًا. استقبال Meta Webhooks وتسجيل الصوت الهاتفي يتطلبان خدمة خلفية ومزودًا معتمدًا؛ لا تضع أسرار API في المتصفح.</p>
+          <div class="module-grid" id="company-module-list"></div>
+          <div class="module-settings">
+            <article class="card">
+              <h4 class="card-title">قوالب التواصل</h4>
+              <div class="form-grid">
+                <div class="field full"><label for="module-whatsapp-template">قالب واتساب · المتغيرات: {name} و{project}</label><textarea class="control" id="module-whatsapp-template" maxlength="1000"></textarea></div>
+                <div class="field"><label for="module-email-subject">عنوان البريد</label><input class="control" id="module-email-subject" maxlength="160"></div>
+                <div class="field full"><label for="module-email-template">قالب البريد · المتغيرات: {name} و{project}</label><textarea class="control" id="module-email-template" maxlength="2000"></textarea></div>
+              </div>
+              <button class="btn btn-secondary form-actions" type="button" id="save-module-templates">حفظ القوالب</button>
+            </article>
+            <article class="card">
+              <h4 class="card-title">واجهة Meta Lead Ads · معاينة ربط الحقول</h4>
+              <p class="module-note">أدخل عنوان Webhook لخدمة خلفية تملكها. لا يستقبل هذا الملف الثابت webhooks مباشرة. يمكن معاينة وتحويل عينة JSON هنا، كما يمكن للخدمة الخلفية استخدام خريطة الحقول المحفوظة.</p>
+              <div class="form-grid" style="margin-top:10px">
+                <div class="field full"><label for="meta-webhook-url">عنوان الخدمة الخلفية (اختياري)</label><input class="control" id="meta-webhook-url" type="url" maxlength="500" placeholder="https://api.example.com/meta-leads"></div>
+                <div class="field full"><label for="meta-field-mapping">خريطة الحقول بصيغة JSON (CRM field → source path)</label><textarea class="control" id="meta-field-mapping" spellcheck="false"></textarea></div>
+                <div class="field full"><label for="meta-sample-json">عينة JSON لمعاينة الحقول</label><textarea class="control" id="meta-sample-json" spellcheck="false" placeholder='{"full_name":"أحمد محمد","phone_number":"01012345678","email":"ahmed@example.com","company_name":"شركة مثال","job_title":"مدير","city":"سوهاج"}'></textarea></div>
+              </div>
+              <div class="btn-row form-actions"><button class="btn btn-secondary" type="button" id="preview-meta-mapping">معاينة الحقول</button><button class="btn btn-primary" type="button" id="save-meta-settings">حفظ إعداد Meta</button></div>
+              <pre class="module-output" id="meta-mapping-preview" aria-live="polite">ستظهر معاينة الحقول هنا.</pre>
+              <button class="btn btn-primary form-actions" type="button" id="import-meta-sample" hidden>استيراد العميل من العينة</button>
+            </article>
+          </div>
+          <article class="card" id="module-roi-card" hidden style="margin-top:14px">
+            <h4 class="card-title">لوحة العائد المتقدمة · ROI</h4>
+            <div class="summary-grid" id="module-roi-summary"></div>
+            <p class="module-note">حساب تقديري استنادًا إلى العمولات المتوقعة المسجلة على العملاء، وليس تقريرًا محاسبيًا.</p>
+          </article>
+        </div>
+      </section>
     </main>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"><span class="toast-icon">✦</span><span id="toast-text"></span></div>
@@ -739,11 +854,53 @@
       <div class="btn-row form-actions"><button class="btn btn-primary" type="submit">حفظ الموعد</button><button class="btn btn-secondary" id="cancel-lead-date" type="button">إلغاء</button></div>
     </form>
   </dialog>
+  <dialog class="cloud-dialog" id="lead-history-dialog" aria-labelledby="lead-history-title">
+    <div class="archive-item-head"><h2 id="lead-history-title">سجل العميل</h2><button class="btn btn-quiet small-btn" id="lead-history-close" type="button">إغلاق</button></div>
+    <div class="timeline-list" id="lead-history-list"></div>
+    <div class="table-empty" id="lead-history-empty"><strong>لا توجد تفاعلات مسجلة بعد</strong></div>
+  </dialog>
+  <dialog class="invoice-dialog" id="invoice-dialog" aria-labelledby="invoice-title">
+    <div class="archive-item-head"><h2 id="invoice-title">عرض سعر / فاتورة مبدئية</h2><button class="btn btn-quiet small-btn" id="invoice-close" type="button">إغلاق</button></div>
+    <p class="card-caption" id="invoice-lead-label"></p>
+    <form id="invoice-form">
+      <input id="invoice-lead-id" type="hidden">
+      <div class="form-grid">
+        <div class="field"><label for="invoice-project">المشروع / الوحدة</label><input class="control" id="invoice-project" maxlength="120" required></div>
+        <div class="field"><label for="invoice-price">السعر الإجمالي</label><input class="control" id="invoice-price" type="number" min="0" step="1" required></div>
+        <div class="field"><label for="invoice-down-payment">مقدم الحجز</label><input class="control" id="invoice-down-payment" type="number" min="0" step="1" value="0" required></div>
+        <div class="field"><label for="invoice-installments">عدد الأقساط الشهرية</label><input class="control" id="invoice-installments" type="number" min="0" step="1" value="0" required></div>
+        <div class="field full"><label for="invoice-notes">ملاحظات وشروط</label><textarea class="control" id="invoice-notes" maxlength="1000"></textarea></div>
+      </div>
+      <div class="module-output" id="invoice-calculation" aria-live="polite"></div>
+      <section class="card" id="invoice-print-preview" style="margin-top:12px">
+        <h2 class="invoice-print-title">MJK Sales · عرض سعر مبدئي</h2>
+        <p id="invoice-preview-customer"></p>
+        <div id="invoice-preview-details"></div>
+        <p id="invoice-preview-notes"></p>
+        <small>عرض مبدئي غير ملزم؛ الأسعار وشروط السداد تخضع لتأكيد المطور.</small>
+      </section>
+      <div class="btn-row form-actions"><button class="btn btn-primary" type="submit">حفظ وطباعة PDF</button></div>
+    </form>
+  </dialog>
+  <dialog class="cloud-dialog" id="admin-add-dialog" aria-labelledby="admin-add-title">
+    <div class="archive-item-head"><h2 id="admin-add-title">إضافة عميل أو دفعة</h2><button class="btn btn-quiet small-btn" id="admin-add-close" type="button">إغلاق</button></div>
+    <p class="card-caption">أضف عميلًا واحدًا أو الصق عدة أسطر بصيغة الاسم، الهاتف، المشروع. ستُنشأ السجلات دون حذف أي بيانات سابقة.</p>
+    <form id="admin-add-form">
+      <div class="form-grid">
+        <div class="field"><label for="admin-add-name">اسم العميل (اختياري للدفعة)</label><input class="control" id="admin-add-name" maxlength="90"></div>
+        <div class="field"><label for="admin-add-phone">الهاتف (اختياري للدفعة)</label><input class="control" id="admin-add-phone" inputmode="tel"></div>
+        <div class="field full"><label for="admin-add-project">المشروع</label><input class="control" id="admin-add-project" maxlength="100"></div>
+        <div class="field"><label for="admin-add-agent">تعيين إلى وكيل</label><select class="control" id="admin-add-agent"></select></div>
+        <div class="field full"><label for="admin-add-batch">دفعة العملاء (سطر لكل عميل: الاسم، الهاتف، المشروع)</label><textarea class="control" id="admin-add-batch" rows="6" placeholder="أحمد محمد، 01012345678، مشروع النخيل"></textarea></div>
+      </div>
+      <div class="btn-row form-actions"><button class="btn btn-primary" type="submit">حفظ العملاء</button></div>
+    </form>
+  </dialog>
   <dialog class="cloud-dialog" id="cloud-sync-dialog" aria-labelledby="cloud-sync-title">
     <div class="archive-item-head"><h2 id="cloud-sync-title">تسجيل الدخول والمزامنة السحابية</h2><button class="btn btn-quiet small-btn" id="close-cloud-dialog" type="button">إغلاق</button></div>
     <p class="helper">إعداد Firebase مضمّن مسبقًا. سجّل الدخول مباشرة للاتصال؛ تظل قاعدة البيانات المحلية فعالة دون اتصال وتتم المزامنة بعد عودة الإنترنت.</p>
     <div class="cloud-sync-note">
-      يلزم تفعيل Authentication → Email/Password وإنشاء Firestore Database ونشر قواعد الملف <strong>firestore.rules</strong> على مشروع MJK Sales.
+      يلزم إنشاء حساب Authentication ووثيقة users/{uid} يدويًا في Firebase Console بالحقول email وcompanyId وrole (admin أو agent)، ثم إنشاء Firestore Database ونشر قواعد الملف <strong>firestore.rules</strong>.
       <br>يفضّل تقديم الصفحة عبر HTTPS أو localhost لتفعيل Firestore offline persistence. تُخزّن المرفقات على هيئة مقاطع Firestore؛ تظل الحصة المجانية محدودة بحصص Google Cloud الحالية، ولا يوجد ضمان بأن كل استخدام سيبقى مجانيًا.
     </div>
     <details class="cloud-config-advanced">
@@ -758,7 +915,7 @@
         <div class="field"><label for="cloud-email">البريد الإلكتروني</label><input class="control" id="cloud-email" type="email" required autocomplete="username"></div>
         <div class="field"><label for="cloud-password">كلمة المرور</label><input class="control" id="cloud-password" type="password" required minlength="6" autocomplete="current-password"></div>
       </div>
-      <div class="btn-row form-actions"><button class="btn btn-primary" id="cloud-login" type="submit">تسجيل الدخول</button><button class="btn btn-secondary" id="cloud-register" type="button">إنشاء حساب</button><button class="btn btn-quiet" id="cloud-sync-now" type="button" hidden>مزامنة الآن</button><button class="btn btn-danger" id="cloud-sign-out" type="button" hidden>تسجيل الخروج</button></div>
+      <div class="btn-row form-actions"><button class="btn btn-primary" id="cloud-login" type="submit">تسجيل الدخول</button><button class="btn btn-secondary" id="cloud-register" type="button" hidden>إنشاء حساب</button><button class="btn btn-quiet" id="cloud-sync-now" type="button" hidden>مزامنة الآن</button><button class="btn btn-danger" id="cloud-sign-out" type="button" hidden>تسجيل الخروج</button></div>
     </form>
     <p class="helper" id="cloud-account-status" role="status" aria-live="polite">بياناتك محفوظة محليًا على هذا الجهاز فقط حتى تهيئة Firebase وتسجيل الدخول.</p>
   </dialog>
@@ -802,6 +959,33 @@
       let cloudUser = null;
       let cloudAccountMismatch = false;
       let cloudListener = null;
+      let companyLeadsListener = null;
+      let teamProfilesListener = null;
+      let companySettingsListener = null;
+      let leadHistoryListener = null;
+      let activeSession = { uid: "", email: "", role: "", companyId: "", ready: false };
+      let teamProfiles = [];
+      const defaultCompanySettings = {
+        features: { whatsapp: true, metaLeadAds: false, voip: false, invoicing: false, emailAutomation: false, advancedAnalytics: false },
+        whatsappTemplate: "مرحبًا {name}، معك فريق MJK بخصوص {project}.",
+        emailSubject: "تفاصيل مشروع {project}",
+        emailTemplate: "مرحبًا {name}،\nيسعدنا تواصلك معنا بخصوص {project}.",
+        metaWebhookUrl: "",
+        metaFieldMapping: { name: "full_name", phone: "phone_number", email: "email", company: "company_name", jobTitle: "job_title", location: "city" }
+      };
+      let companySettings = JSON.parse(JSON.stringify(defaultCompanySettings));
+      let metaPreviewLead = null;
+      let activePipeline = "rejected";
+      let companyLeadCacheKey = "";
+      let companyInitialServerSnapshot = false;
+      let companyLeadRecords = new Map();
+      const pendingCompanyLeadIds = new Set();
+      const writingCompanyLeadIds = new Set();
+      const companyLeadWriteQueues = new Map();
+      const pendingCompanyActionIds = new Set();
+      let pendingLegacyLeadMigration = [];
+      let legacyCloudLeadRecords = new Map();
+      let companyActions = [];
       let cloudInitPromise = null;
       let cloudApplyingRemote = false;
       let cloudSyncInProgress = false;
@@ -851,6 +1035,462 @@
       }
 
       const cloudCollections = ["lookups", "appointments", "customScripts", "archive", "projectKnowledge", "crmBatches"];
+      function defaultAppState() {
+        return { lookups: [], appointments: [], customScripts: [], archive: [], projectKnowledge: [], crmBatches: [], cleanerBatchRuns: 0, cleanerRows: [] };
+      }
+      function companyLeadsPath() {
+        if (!activeSession.companyId) throw new Error("ملف المستخدم لا يحتوي على companyId.");
+        return cloudDb.collection("companies").doc(activeSession.companyId).collection("leads");
+      }
+      function companyLeadStorageKey(uid = activeSession.uid, companyId = activeSession.companyId) {
+        return `mjkCloserLeads.company.${encodeURIComponent(companyId)}.${encodeURIComponent(uid)}`;
+      }
+      function companySettingsPath(companyId = activeSession.companyId) {
+        if (!companyId) throw new Error("ملف المستخدم لا يحتوي على companyId.");
+        return cloudDb.collection("companies").doc(companyId).collection("companySettings").doc("features");
+      }
+      function companySettingsStorageKey(companyId = activeSession.companyId) {
+        return `mjkSales.companySettings.${encodeURIComponent(companyId)}`;
+      }
+      function companySettingsPendingKey(companyId = activeSession.companyId) {
+        return `${companySettingsStorageKey(companyId)}.pending`;
+      }
+      function normalizeCompanySettings(value = {}) {
+        const featureValues = value.features && typeof value.features === "object" ? value.features : {};
+        return {
+          ...defaultCompanySettings,
+          ...value,
+          features: Object.fromEntries(Object.entries(defaultCompanySettings.features)
+            .map(([key, defaultValue]) => [key, typeof featureValues[key] === "boolean" ? featureValues[key] : defaultValue])),
+          whatsappTemplate: typeof value.whatsappTemplate === "string" ? value.whatsappTemplate : defaultCompanySettings.whatsappTemplate,
+          emailSubject: typeof value.emailSubject === "string" ? value.emailSubject : defaultCompanySettings.emailSubject,
+          emailTemplate: typeof value.emailTemplate === "string" ? value.emailTemplate : defaultCompanySettings.emailTemplate,
+          metaWebhookUrl: typeof value.metaWebhookUrl === "string" ? value.metaWebhookUrl : "",
+          metaFieldMapping: value.metaFieldMapping && typeof value.metaFieldMapping === "object"
+            ? value.metaFieldMapping : { ...defaultCompanySettings.metaFieldMapping }
+        };
+      }
+      function featureEnabled(name) {
+        return companySettings.features[name] === true;
+      }
+      function renderCompanyModules() {
+        const moduleDefinitions = [
+          ["whatsapp", "واتساب سريع وقوالب الرسائل", "فتح دردشة مباشرة بقالب الشركة مع بيانات العميل."],
+          ["metaLeadAds", "مزامنة Meta Lead Ads", "معاينة خريطة الحقول واستيراد عينات leads؛ استقبال webhooks يحتاج backend."],
+          ["voip", "اتصال VoIP وسجل المكالمات", "بدء اتصال عبر تطبيق الهاتف وتسجيل محاولة الاتصال؛ التسجيل الصوتي يحتاج مزودًا خارجيًا."],
+          ["invoicing", "الفواتير وعروض الأسعار", "إنشاء عرض سعر، حفظه في العميل، والطباعة أو الحفظ PDF."],
+          ["emailAutomation", "قوالب البريد والأتمتة", "فتح رسالة بريد جاهزة من قالب الشركة؛ إرسال workflow آلي يحتاج خدمة بريد خلفية."],
+          ["advancedAnalytics", "التحليلات المتقدمة والعائد ROI", "إظهار مؤشرات العمولة والتحويل التقديرية للشركة."]
+        ];
+        byId("company-module-list").innerHTML = moduleDefinitions.map(([key, title, description]) => {
+          const enabled = featureEnabled(key);
+          return `<article class="module-card"><div><h4>${title}</h4><p>${description}</p><span class="module-state ${enabled ? "is-on" : ""}">${enabled ? "مفعّل" : "معطّل من الإدارة"}</span></div>
+            <label class="module-switch"><span>${enabled ? "ON" : "OFF"}</span><input type="checkbox" data-company-feature="${key}" ${enabled ? "checked" : ""} aria-label="${title}"></label></article>`;
+        }).join("");
+        byId("module-settings-status").textContent = activeSession.ready
+          ? `إعدادات الشركة · ${activeSession.companyId}` : "إعدادات محلية · سجّل الدخول للحفظ السحابي";
+        byId("module-whatsapp-template").value = companySettings.whatsappTemplate;
+        byId("module-email-subject").value = companySettings.emailSubject;
+        byId("module-email-template").value = companySettings.emailTemplate;
+        byId("meta-webhook-url").value = companySettings.metaWebhookUrl;
+        byId("meta-field-mapping").value = JSON.stringify(companySettings.metaFieldMapping, null, 2);
+        byId("module-roi-card").hidden = !featureEnabled("advancedAnalytics");
+        if (!byId("module-roi-card").hidden) renderModuleRoi();
+        byId("import-meta-sample").hidden = !featureEnabled("metaLeadAds") || !metaPreviewLead;
+        renderLeads();
+      }
+      function renderModuleRoi() {
+        const scopedLeads = leads.filter(canViewLead);
+        const commission = scopedLeads.reduce((total, lead) => total + (Number(lead.expectedCommission) || 0), 0);
+        const won = scopedLeads.filter(lead => lead.completed || lead.status === "won");
+        const wonCommission = won.reduce((total, lead) => total + (Number(lead.expectedCommission) || 0), 0);
+        byId("module-roi-summary").innerHTML = [
+          ["العملاء", scopedLeads.length], ["الصفقات المغلقة", won.length],
+          ["العمولات المتوقعة", money.format(commission)], ["عمولات الصفقات", money.format(wonCommission)]
+        ].map(([label, value]) => `<article class="summary-card"><span class="summary-label">${label}</span><strong class="summary-value">${value}</strong></article>`).join("");
+      }
+      async function saveCompanySettings(patch) {
+        if (cloudUser && (!activeSession.ready || activeSession.role !== "admin")) {
+          showToast("تعديل وحدات الشركة متاح لمدير الشركة فقط.");
+          return false;
+        }
+        const previous = JSON.parse(JSON.stringify(companySettings));
+        companySettings = normalizeCompanySettings({ ...companySettings, ...patch,
+          features: { ...companySettings.features, ...(patch.features || {}) } });
+        try {
+          localStorage.setItem(companySettingsStorageKey(), JSON.stringify(companySettings));
+        } catch (error) {
+          companySettings = previous;
+          renderCompanyModules();
+          console.error("Could not save company module settings locally:", error);
+          showToast("تعذر حفظ إعدادات الوحدات محليًا؛ لم يتم تطبيق التغيير.");
+          return false;
+        }
+        renderCompanyModules();
+        if (!activeSession.ready || !cloudDb) return true;
+        if (!navigator.onLine) {
+          try {
+            localStorage.setItem(companySettingsPendingKey(), "true");
+            showToast("حُفظت إعدادات الوحدات محليًا؛ ستتم مزامنتها عند عودة الاتصال.");
+          } catch (error) {
+            console.error("Could not queue offline company settings:", error);
+            showToast("حُفظت الإعدادات على هذا الجهاز، لكن تعذر حفظ طابور المزامنة.");
+          }
+          return true;
+        }
+        try {
+          await companySettingsPath().set(companySettings, { merge: true });
+          localStorage.removeItem(companySettingsPendingKey());
+        } catch (error) {
+          try { localStorage.setItem(companySettingsPendingKey(), "true"); }
+          catch (storageError) { console.error("Could not queue pending company settings:", storageError); }
+          console.error("Could not save company feature settings:", error);
+          byId("module-settings-status").textContent = "إعدادات محلية بانتظار المزامنة";
+          showToast(`حُفظت محليًا، لكن تعذر مزامنة إعدادات الوحدات: ${error.message || error.code}.`);
+        }
+        return true;
+      }
+      async function flushPendingCompanySettings() {
+        if (!activeSession.ready || !cloudDb || !navigator.onLine ||
+            localStorage.getItem(companySettingsPendingKey()) !== "true") return;
+        try {
+          await companySettingsPath().set(companySettings, { merge: true });
+          localStorage.removeItem(companySettingsPendingKey());
+          byId("module-settings-status").textContent = `إعدادات الشركة · ${activeSession.companyId}`;
+        } catch (error) {
+          console.error("Could not sync pending company settings:", error);
+          showToast(`تعذر مزامنة إعدادات الوحدات المعلقة: ${error.message || error.code}.`);
+        }
+      }
+      function persistCompanyPendingQueue() {
+        if (!companyLeadCacheKey) return;
+        try {
+          localStorage.setItem(`${companyLeadCacheKey}.pending`, JSON.stringify({
+            leads: [...pendingCompanyLeadIds], actions: [...pendingCompanyActionIds]
+          }));
+        } catch (error) {
+          console.error("Could not save the company synchronization queue:", error);
+          showToast("تعذر حفظ طابور المزامنة محليًا؛ صدّر نسخة احتياطية.");
+        }
+      }
+      function canViewLead(lead) {
+        if (!cloudUser) return true;
+        if (!activeSession.ready) return false;
+        if (activeSession.role === "admin") return !lead.companyId || lead.companyId === activeSession.companyId;
+        const assigned = [activeSession.uid, activeSession.email].filter(Boolean);
+        return lead.companyId === activeSession.companyId && assigned.includes(lead.assignedTo);
+      }
+      function canModifyLead(lead) {
+        if (!cloudUser) return true;
+        return activeSession.ready && (activeSession.role === "admin" ||
+          (activeSession.role === "agent" && lead.companyId === activeSession.companyId &&
+            [activeSession.uid, activeSession.email].filter(Boolean).includes(lead.assignedTo)));
+      }
+      function refreshSessionUi() {
+        const admin = activeSession.ready && activeSession.role === "admin";
+        byId("tab-admin").hidden = !admin;
+        if (!admin && document.querySelector('.tab-button[data-tab="admin"]').classList.contains("active")) switchTab("crm");
+        byId("session-role-label").textContent = activeSession.ready
+          ? `${activeSession.role === "admin" ? "مدير الشركة" : "وكيل"} · ${activeSession.companyId}`
+          : cloudUser ? "يتطلب ملف مستخدم صالح" : "جلسة محلية";
+        byId("admin-add-open").hidden = !admin;
+        byId("lead-form").querySelectorAll("input,select,textarea,button").forEach(control => {
+          control.disabled = Boolean(cloudUser && !activeSession.ready);
+        });
+        if (admin) renderAdminDashboard();
+        renderLeads();
+        renderPipeline();
+      }
+      function switchLocalUser(uid, role, companyId) {
+        const previousUid = cloudSyncMetadata.ownerUid;
+        if (previousUid && previousUid !== uid) {
+          try {
+            localStorage.setItem(`mjkCloserLeads.user.${encodeURIComponent(previousUid)}`, localStorage.getItem(STORAGE_KEY) || "[]");
+            localStorage.setItem(`mjkSalesTools.user.${encodeURIComponent(previousUid)}`, localStorage.getItem(APP_STATE_KEY) || JSON.stringify(appState));
+            const savedLeads = localStorage.getItem(`mjkCloserLeads.user.${encodeURIComponent(uid)}`);
+            leads = savedLeads ? JSON.parse(savedLeads) : [];
+            const savedState = localStorage.getItem(`mjkSalesTools.user.${encodeURIComponent(uid)}`);
+            appState = savedState ? { ...defaultAppState(), ...JSON.parse(savedState) } : defaultAppState();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
+            localStorage.setItem(APP_STATE_KEY, JSON.stringify(appState));
+            cloudSyncMetadata = { ownerUid: uid, versions: {}, tombstones: {} };
+            if (!persistCloudSyncMetadata()) return false;
+            lastLocalRecords = serializeCloudRecords(collectLocalCloudRecords());
+          } catch (error) {
+            console.error("Could not isolate local data for the signed-in Firebase user:", error);
+            showToast("تعذر فصل بيانات الحسابات على هذا الجهاز. لم يتم تفعيل جلسة الشركة.");
+            return false;
+          }
+        } else if (!previousUid) {
+          cloudSyncMetadata.ownerUid = uid;
+          if (!persistCloudSyncMetadata()) return false;
+        }
+        activeSession = { uid, email: cloudUser?.email || "", role, companyId, ready: true };
+        companyLeadCacheKey = companyLeadStorageKey(uid, companyId);
+        try {
+          const savedSettings = localStorage.getItem(companySettingsStorageKey(companyId));
+          companySettings = normalizeCompanySettings(savedSettings ? JSON.parse(savedSettings) : defaultCompanySettings);
+        } catch (error) {
+          console.error("Could not load cached company module settings:", error);
+          companySettings = normalizeCompanySettings();
+        }
+        try {
+          const queue = JSON.parse(localStorage.getItem(`${companyLeadCacheKey}.pending`) || "{}");
+          pendingCompanyLeadIds.clear();
+          (Array.isArray(queue.leads) ? queue.leads : []).forEach(id => pendingCompanyLeadIds.add(id));
+          pendingCompanyActionIds.clear();
+          (Array.isArray(queue.actions) ? queue.actions : []).forEach(id => pendingCompanyActionIds.add(id));
+        } catch (error) {
+          console.error("Could not restore the company synchronization queue:", error);
+        }
+        const cached = localStorage.getItem(companyLeadCacheKey);
+        if (cached) {
+          try {
+            leads = JSON.parse(cached).filter(canViewLead);
+          } catch (error) {
+            console.error("Could not load the company lead cache:", error);
+            leads = [];
+          }
+        } else if (role === "admin" && (!previousUid || previousUid === uid)) {
+          leads = leads.filter(lead => !lead.companyId || lead.companyId === companyId);
+          pendingLegacyLeadMigration = leads.map(lead => ({
+            ...lead, companyId, updatedAt: Date.now(),
+            batchId: lead.batchId || lead.sourceBatchId || "",
+            batchName: lead.batchName || (lead.sourceBatchId ? "دفعة CRM" : "")
+          }));
+          leads = pendingLegacyLeadMigration;
+        } else {
+          leads = [];
+        }
+        localStorage.setItem(companyLeadCacheKey, JSON.stringify(leads));
+        try { companyActions = JSON.parse(localStorage.getItem(`${companyLeadCacheKey}.actions`) || "[]"); }
+        catch (error) { console.error("Could not load the local lead action cache:", error); companyActions = []; }
+        companyLeadRecords = new Map(leads.map(lead => [lead.id, JSON.stringify(lead)]));
+        lastLocalRecords = serializeCloudRecords(collectLocalCloudRecords());
+        refreshSessionUi();
+        renderCompanyModules();
+        return true;
+      }
+      function captureLocalCompanyLeadChanges() {
+        if (cloudApplyingRemote || !activeSession.ready) return;
+        const next = new Map(leads.filter(lead => canViewLead(lead)).map(lead => [lead.id, JSON.stringify(lead)]));
+        next.forEach((serialized, id) => {
+          if (companyLeadRecords.get(id) === serialized) return;
+          const lead = leads.find(item => item.id === id);
+          if (!lead || !canModifyLead(lead)) return;
+          lead.companyId = activeSession.companyId;
+          lead.updatedAt = Date.now();
+          next.set(id, JSON.stringify(lead));
+          pendingCompanyLeadIds.add(id);
+        });
+        companyLeadRecords.forEach((_, id) => {
+          if (!next.has(id)) {
+            showToast("لا يمكن حذف العملاء؛ استخدم حالة الرفض أو الأرشفة للحفاظ على سجل العميل.");
+            const cached = localStorage.getItem(companyLeadCacheKey);
+            if (cached) leads = JSON.parse(cached);
+          }
+        });
+        companyLeadRecords = new Map(leads.filter(lead => canViewLead(lead)).map(lead => [lead.id, JSON.stringify(lead)]));
+        persistCompanyPendingQueue();
+        pendingCompanyLeadIds.forEach(id => {
+          const lead = leads.find(item => item.id === id);
+          if (lead && !companyLeadWriteQueues.has(id)) void writeCompanyLead(lead).catch(() => {});
+        });
+      }
+      function writeCompanyLead(lead) {
+        if (!activeSession.ready || !cloudDb || !navigator.onLine || !canModifyLead(lead)) return Promise.resolve();
+        const leadId = lead.id;
+        const companyId = activeSession.companyId;
+        const companyCacheKey = companyLeadCacheKey;
+        const payload = JSON.parse(JSON.stringify({ ...lead, companyId, updatedAt: Date.now() }));
+        const reference = cloudDb.collection("companies").doc(companyId).collection("leads").doc(leadId);
+        const previousWrite = companyLeadWriteQueues.get(leadId) || Promise.resolve();
+        const write = previousWrite.catch(() => {}).then(async () => {
+          writingCompanyLeadIds.add(leadId);
+          try {
+            try {
+              await reference.update(payload);
+            } catch (error) {
+              if (error.code !== "not-found") throw error;
+              await reference.set(payload);
+            }
+            const current = leads.find(item => item.id === leadId);
+            if (current && leadPayloadMatches(current, payload)) {
+              current.updatedAt = payload.updatedAt;
+              pendingCompanyLeadIds.delete(leadId);
+              companyLeadRecords.set(leadId, JSON.stringify(current));
+            }
+            persistCompanyPendingQueue();
+            localStorage.setItem(companyCacheKey, JSON.stringify(leads));
+          } catch (error) {
+            console.error("Could not persist company lead to Firestore:", error);
+            showToast(`تعذر حفظ العميل سحابيًا؛ النسخة المحلية محفوظة: ${error.message || error.code}.`);
+            setCloudStatus("تعذر حفظ العميل في Firebase", "error");
+            throw error;
+          } finally {
+            writingCompanyLeadIds.delete(leadId);
+          }
+        });
+        companyLeadWriteQueues.set(leadId, write);
+        write.finally(() => {
+          if (companyLeadWriteQueues.get(leadId) === write) companyLeadWriteQueues.delete(leadId);
+        }).catch(() => {});
+        return write;
+      }
+      async function writeLeadAudit(lead, action, previousStatus, notes = "") {
+        const entry = {
+          id: makeId("action"), companyId: lead.companyId || activeSession.companyId || "",
+          leadId: lead.id, agentId: activeSession.uid || "local",
+          agentEmail: activeSession.email || "", agentName: activeSession.email || "مستخدم محلي",
+          action, notes, previousStatus: previousStatus || "new", status: lead.status || "new",
+          createdAt: new Date().toISOString(), assignedTo: lead.assignedTo || ""
+        };
+        lead.lastAction = {
+          action: entry.action, notes: entry.notes, agentName: entry.agentName,
+          createdAt: entry.createdAt, previousStatus: entry.previousStatus, status: entry.status
+        };
+        persistLeads();
+        companyActions = [entry, ...companyActions].slice(0, 500);
+        pendingCompanyActionIds.add(entry.id);
+        try {
+          localStorage.setItem(companyLeadCacheKey ? `${companyLeadCacheKey}.actions` : "mjkLeadActions.local", JSON.stringify(companyActions));
+          persistCompanyPendingQueue();
+        } catch (error) {
+          console.error("Could not save the local lead audit queue:", error);
+          showToast("تعذر حفظ سجل النشاط محليًا؛ صدّر نسخة احتياطية فورًا.");
+        }
+        renderPipeline();
+        await flushPendingLeadActions(lead.id);
+      }
+      async function flushPendingLeadActions(onlyLeadId = "") {
+        if (!activeSession.ready || !navigator.onLine) return;
+        for (const id of [...pendingCompanyActionIds]) {
+          const entry = companyActions.find(item => item.id === id);
+          if (!entry || (onlyLeadId && entry.leadId !== onlyLeadId)) continue;
+          const lead = leads.find(item => item.id === entry.leadId && canViewLead(item));
+          if (!lead) continue;
+          try {
+            await companyLeadsPath().doc(entry.leadId).collection("actions").doc(entry.id).set(entry);
+            pendingCompanyActionIds.delete(entry.id);
+            persistCompanyPendingQueue();
+          } catch (error) {
+            console.error("Could not write lead audit event to Firestore:", error);
+            showToast(`حُفظ النشاط محليًا لكن تعذر رفعه إلى Firestore: ${error.message || error.code}.`);
+            return;
+          }
+        }
+      }
+      function attachCompanyLeadsListener() {
+        if (!activeSession.ready || !cloudDb) return;
+        if (companyLeadsListener) companyLeadsListener();
+        companyInitialServerSnapshot = false;
+        let query = companyLeadsPath().where("companyId", "==", activeSession.companyId);
+        if (activeSession.role === "agent") {
+          const assignees = [...new Set([activeSession.uid, activeSession.email].filter(Boolean))];
+          query = query.where("assignedTo", "in", assignees);
+        }
+        companyLeadsListener = query.onSnapshot({ includeMetadataChanges: true }, snapshot => {
+          if (snapshot.metadata?.fromCache && navigator.onLine && !companyInitialServerSnapshot) return;
+          if (!snapshot.metadata?.fromCache) companyInitialServerSnapshot = true;
+          const remoteLeads = new Map(snapshot.docs.map(document => [document.id, document.data()]));
+          if (snapshot.metadata?.fromCache && navigator.onLine && !companyInitialServerSnapshot) return;
+          const merged = new Map(remoteLeads);
+          leads.forEach(lead => {
+            if (pendingCompanyLeadIds.has(lead.id) || writingCompanyLeadIds.has(lead.id)) {
+              const remote = remoteLeads.get(lead.id);
+              if (remote && leadPayloadMatches(lead, remote)) pendingCompanyLeadIds.delete(lead.id);
+              else merged.set(lead.id, lead);
+            }
+          });
+          leads = [...merged.values()].filter(canViewLead);
+          companyLeadRecords = new Map(leads.map(lead => [lead.id, JSON.stringify(lead)]));
+          persistCompanyPendingQueue();
+          try { localStorage.setItem(companyLeadCacheKey, JSON.stringify(leads)); }
+          catch (error) { console.error("Could not cache company leads locally:", error); showToast("تعذر تحديث النسخة المحلية للعملاء."); }
+          renderLeads();
+          renderAnalytics();
+          renderPipeline();
+          renderAdminDashboard();
+          if (!snapshot.metadata?.fromCache) setCloudStatus("🟢 متصل أونلاين · مزامنة مباشرة", "synced");
+          if (companyInitialServerSnapshot) {
+            void migratePendingCompanyLeads(remoteLeads);
+            pendingCompanyLeadIds.forEach(id => {
+              const lead = leads.find(item => item.id === id);
+              if (lead && !companyLeadWriteQueues.has(id)) void writeCompanyLead(lead).catch(() => {});
+            });
+          }
+          if (companyInitialServerSnapshot) void flushPendingLeadActions();
+        }, error => {
+          console.error("Company lead listener failed:", error);
+          setCloudStatus("تعذر تحميل عملاء الشركة", "error");
+          showToast(`تعذر تحميل قائمة الشركة: ${error.message || error.code}.`);
+        });
+      }
+      async function migratePendingCompanyLeads(remoteLeads) {
+        if (activeSession.role !== "admin" || (!pendingLegacyLeadMigration.length && !legacyCloudLeadRecords.size)) return;
+        const migration = [
+          ...legacyCloudLeadRecords.values(),
+          ...pendingLegacyLeadMigration.splice(0)
+        ];
+        legacyCloudLeadRecords.clear();
+        const unique = new Map(migration.map(lead => [lead.id, lead]));
+        const toAdd = [...unique.values()].filter(lead => !remoteLeads.has(lead.id));
+        if (!toAdd.length) return;
+        leads = [...toAdd, ...leads.filter(lead => !toAdd.some(item => item.id === lead.id))];
+        toAdd.forEach(lead => pendingCompanyLeadIds.add(lead.id));
+        persistCompanyPendingQueue();
+        try {
+          localStorage.setItem(companyLeadCacheKey, JSON.stringify(leads));
+          companyLeadRecords = new Map(leads.map(lead => [lead.id, JSON.stringify(lead)]));
+          await Promise.all(toAdd.map(writeCompanyLead));
+          showToast(`تم ربط ${toAdd.length} عميلًا قديمًا بشركة ${activeSession.companyId}.`);
+          renderLeads();
+        } catch (error) {
+          pendingLegacyLeadMigration = [...migration, ...pendingLegacyLeadMigration];
+          console.error("Could not migrate legacy company leads:", error);
+          showToast(`تعذر ترحيل بعض العملاء القدامى: ${error.message || error.code}.`);
+        }
+      }
+      function attachTeamProfilesListener() {
+        if (teamProfilesListener) teamProfilesListener();
+        teamProfiles = [];
+        if (!activeSession.ready || activeSession.role !== "admin") { refreshSessionUi(); return; }
+        teamProfilesListener = cloudDb.collection("users")
+          .where("companyId", "==", activeSession.companyId)
+          .onSnapshot(snapshot => {
+            teamProfiles = snapshot.docs.map(document => ({ uid: document.id, ...document.data() }))
+              .filter(profile => profile.role === "agent");
+            renderAdminDashboard();
+            renderLeads();
+          }, error => {
+            console.error("Could not load company agent profiles:", error);
+            showToast(`تعذر تحميل فريق الشركة: ${error.message || error.code}.`);
+          });
+      }
+      function attachCompanySettingsListener() {
+          if (companySettingsListener) companySettingsListener();
+          companySettingsListener = null;
+          if (!activeSession.ready || !cloudDb) return;
+          companySettingsListener = companySettingsPath().onSnapshot(snapshot => {
+            if (localStorage.getItem(companySettingsPendingKey()) === "true") {
+              try {
+                const cached = localStorage.getItem(companySettingsStorageKey());
+                if (cached) companySettings = normalizeCompanySettings(JSON.parse(cached));
+              } catch (error) { console.error("Could not restore pending company settings:", error); }
+              if (navigator.onLine) void flushPendingCompanySettings();
+              renderCompanyModules();
+              return;
+            }
+            companySettings = normalizeCompanySettings(snapshot.exists ? snapshot.data() : defaultCompanySettings);
+            try { localStorage.setItem(companySettingsStorageKey(), JSON.stringify(companySettings)); }
+            catch (error) { console.error("Could not cache company module settings:", error); }
+            renderCompanyModules();
+          }, error => {
+            console.error("Company feature settings listener failed:", error);
+            byId("module-settings-status").textContent = "تعذر تحميل إعدادات الشركة";
+            showToast(`تعذر تحميل وحدات الشركة: ${error.message || error.code}.`);
+          });
+      }
       function loadCloudSyncMetadata() {
         try {
           const parsed = JSON.parse(localStorage.getItem(CLOUD_SYNC_META_KEY) || "{}");
@@ -880,9 +1520,6 @@
       }
       function collectLocalCloudRecords() {
         const records = new Map();
-        leads.forEach(item => {
-          if (item && typeof item.id === "string") records.set(cloudRecordKey("lead", item.id), { kind: "lead", id: item.id, data: item });
-        });
         cloudCollections.forEach(kind => {
           const items = appState[kind];
           if (!Array.isArray(items)) return;
@@ -977,8 +1614,14 @@
 
       function persistLeads() {
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
-          captureLocalCloudChanges();
+          if (activeSession.ready) {
+            leads.forEach(lead => {
+              lead.companyId = activeSession.companyId;
+              if (activeSession.role === "agent" && !lead.assignedTo) lead.assignedTo = activeSession.uid;
+            });
+          }
+          captureLocalCompanyLeadChanges();
+          localStorage.setItem(companyLeadCacheKey && activeSession.ready ? companyLeadCacheKey : STORAGE_KEY, JSON.stringify(leads));
           return true;
         } catch (error) {
           console.error("Could not save MJK client data to localStorage:", error);
@@ -1005,6 +1648,15 @@
         else if (mode === "pending") { button.classList.add("is-pending"); icon.textContent = "🟠"; }
         else if (mode === "error") { button.classList.add("is-error"); icon.textContent = "🔴"; }
         else { icon.textContent = "☁️"; }
+        const liveStatus = byId("header-live-status");
+        const liveText = byId("header-live-text");
+        if (liveStatus && liveText) {
+          liveStatus.classList.toggle("is-offline", !navigator.onLine || mode === "error" || !cloudUser);
+          liveText.textContent = !navigator.onLine ? "أوفلاين · محفوظ محليًا"
+            : cloudUser && activeSession.ready && companyInitialServerSnapshot ? "متصل أونلاين · مزامنة مباشرة"
+              : cloudUser && activeSession.ready ? "جارٍ الاتصال بالشركة"
+                : cloudUser ? "تحقق من صلاحيات الحساب" : "البيانات محفوظة على هذا الجهاز";
+        }
       }
       function cloudRecordsPath() {
         if (!cloudUser) throw new Error("سجّل الدخول إلى Firebase أولًا.");
@@ -1090,7 +1742,6 @@
         const meta = nextRecords.find(record => record.kind === "meta")?.data || {};
         cloudApplyingRemote = true;
         try {
-          leads = getCollection("lead");
           cloudCollections.forEach(kind => { appState[kind] = getCollection(kind); });
           appState.cleanerBatchRuns = Math.max(0, Number(meta.cleanerBatchRuns) || 0);
           appState.cleanerRows = Array.isArray(meta.cleanerRows) ? meta.cleanerRows : [];
@@ -1313,7 +1964,7 @@
       function updateCloudAccountUi() {
         const signedIn = Boolean(cloudUser);
         byId("cloud-login").hidden = signedIn;
-        byId("cloud-register").hidden = signedIn;
+        byId("cloud-register").hidden = true;
         byId("cloud-sync-now").hidden = !signedIn;
         byId("cloud-sync-now").disabled = signedIn && (cloudAccountMismatch || !cloudInitialServerSnapshot);
         byId("cloud-sign-out").hidden = !signedIn;
@@ -1339,7 +1990,7 @@
         }
         if (!window.firebase?.initializeApp || !window.firebase?.firestore) {
           setCloudStatus("حزم Firebase المحلية غير متاحة", "error");
-          byId("cloud-account-status").textContent = "تحقق من وجود ملفات Firebase في مجلد vendor بجوار index.html.";
+          byId("cloud-account-status").textContent = "تعذر تحميل حزم Firebase من CDN. تحقق من اتصال الإنترنت.";
           return false;
         }
         const firebaseApps = window.firebase.apps || [];
@@ -1365,15 +2016,47 @@
         }
         if (!cloudInitPromise) {
           cloudInitPromise = new Promise(resolve => {
-            cloudAuth.onAuthStateChanged(user => {
+            cloudAuth.onAuthStateChanged(async user => {
+              const previousUser = cloudUser;
+              if (previousUser && previousUser.uid !== user?.uid) {
+                if (cloudListener) cloudListener();
+                if (companyLeadsListener) companyLeadsListener();
+                if (teamProfilesListener) teamProfilesListener();
+                if (companySettingsListener) companySettingsListener();
+                cloudListener = null;
+                companyLeadsListener = null;
+                teamProfilesListener = null;
+                companySettingsListener = null;
+                activeSession = { uid: "", email: "", role: "", companyId: "", ready: false };
+              }
               cloudUser = user;
-              cloudAccountMismatch = Boolean(user && cloudSyncMetadata.ownerUid && cloudSyncMetadata.ownerUid !== user.uid);
+              cloudAccountMismatch = false;
               updateCloudAccountUi();
               if (!user) {
                 if (cloudListener) cloudListener();
                 cloudListener = null;
+                if (companyLeadsListener) companyLeadsListener();
+                companyLeadsListener = null;
+                if (teamProfilesListener) teamProfilesListener();
+                teamProfilesListener = null;
+                if (companySettingsListener) companySettingsListener();
+                companySettingsListener = null;
+                activeSession = { uid: "", email: "", role: "", companyId: "", ready: false };
                 cloudRemoteRecords.clear();
                 cloudInitialServerSnapshot = false;
+                companyInitialServerSnapshot = false;
+                teamProfiles = [];
+                companySettings = normalizeCompanySettings();
+                metaPreviewLead = null;
+                if (previousUser) {
+                  leads = [];
+                  companyActions = [];
+                  companyLeadRecords.clear();
+                  companyLeadCacheKey = "";
+                  try { localStorage.setItem(STORAGE_KEY, "[]"); }
+                  catch (error) { console.error("Could not clear the signed-in CRM view:", error); }
+                }
+                refreshSessionUi();
                 setCloudStatus(navigator.onLine ? "Firebase جاهز · سجّل الدخول للمزامنة" : "أوفلاين · البيانات محفوظة محليًا", navigator.onLine ? "local" : "pending");
                 byId("cloud-account-status").textContent = navigator.onLine
                   ? "إعداد Firebase جاهز. سجّل الدخول للبدء بمزامنة بيانات هذا الجهاز."
@@ -1381,22 +2064,36 @@
                 resolve(true);
                 return;
               }
-              if (cloudAccountMismatch) {
-                setCloudStatus("الحساب مختلف عن بيانات هذا الجهاز", "error");
-                byId("cloud-account-status").textContent = "لمنع دمج بيانات مستخدمين مختلفين، أوقفنا المزامنة. سجّل الخروج ثم أعد ضبط البيانات المحلية لهذا الجهاز قبل استخدام حساب آخر؛ النسخة السحابية لا تتأثر.";
+              if (!cloudDb) {
+                resolve(false);
+                return;
+              }
+              let profile;
+              try {
+                const profileSnapshot = await cloudDb.collection("users").doc(user.uid).get();
+                if (!profileSnapshot.exists) throw new Error("لم يُعثر على ملف المستخدم. أنشئ المستند users/{uid} من Firebase Console مع الحقول role وcompanyId وemail.");
+                profile = profileSnapshot.data();
+                if (!["admin", "agent"].includes(profile.role) || typeof profile.companyId !== "string" || !profile.companyId.trim()) {
+                  throw new Error("يجب أن يحتوي ملف users/{uid} على role من admin أو agent وعلى companyId صالح.");
+                }
+              } catch (error) {
+                activeSession = { uid: user.uid, email: user.email || "", role: "", companyId: "", ready: false };
+                updateCloudAccountUi();
+                refreshSessionUi();
+                byId("cloud-account-status").textContent = `تعذر تحميل صلاحيات الشركة: ${error.message || error.code}.`;
+                setCloudStatus("ملف الشركة غير مكتمل", "error");
                 resolve(true);
                 return;
               }
-              if (!cloudSyncMetadata.ownerUid) {
-                cloudSyncMetadata.ownerUid = user.uid;
-                if (!persistCloudSyncMetadata()) {
-                  cloudAccountMismatch = true;
-                  updateCloudAccountUi();
-                  byId("cloud-account-status").textContent = "تعذر حفظ ارتباط الحساب بهذا الجهاز محليًا. أفرغ مساحة المتصفح قبل تفعيل المزامنة.";
-                  resolve(true);
-                  return;
-                }
+              if (!switchLocalUser(user.uid, profile.role, profile.companyId)) {
+                resolve(true);
+                return;
               }
+              if (cloudListener) cloudListener();
+              if (teamProfilesListener) teamProfilesListener();
+              attachCompanyLeadsListener();
+              attachTeamProfilesListener();
+              attachCompanySettingsListener();
               attachCloudListener();
               resolve(true);
             }, error => {
@@ -1426,6 +2123,17 @@
           }
           try {
             const remoteRecords = decodeCloudSnapshot(snapshot);
+            if (activeSession.role === "admin") {
+              remoteRecords.forEach(record => {
+                if (record.kind === "lead" && !record.deleted && record.data && !record.data.companyId) {
+                  legacyCloudLeadRecords.set(record.id, {
+                    ...record.data, companyId: activeSession.companyId,
+                    batchId: record.data.batchId || record.data.sourceBatchId || "",
+                    batchName: record.data.batchName || (record.data.sourceBatchId ? "دفعة CRM" : "")
+                  });
+                }
+              });
+            }
             cloudMergeQueue = cloudMergeQueue.then(() => reconcileCloudRecords(remoteRecords)).catch(error => {
               console.error("Could not merge Firebase changes:", error);
               setCloudStatus("تعذرت مطابقة البيانات السحابية", "error");
@@ -1487,24 +2195,11 @@
           await cloudAuth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
           await cloudAuth.signInWithEmailAndPassword(byId("cloud-email").value.trim(), byId("cloud-password").value);
           byId("cloud-password").value = "";
-          byId("cloud-account-status").textContent = "تم تسجيل الدخول؛ جارٍ دمج البيانات المحلية والسحابية.";
+          byId("cloud-account-status").textContent = "تم تسجيل الدخول؛ جارٍ تحميل ملف المستخدم وصلاحيات الشركة.";
         } catch (error) {
           console.error("Firebase email/password sign-in failed:", error);
           byId("cloud-account-status").textContent = `تعذر تسجيل الدخول: ${error.message || error.code}. تحقق من البريد وكلمة المرور وتفعيل Email/Password.`;
           setCloudStatus("فشل تسجيل الدخول", "error");
-        }
-      });
-      byId("cloud-register").addEventListener("click", async () => {
-        try {
-          if (!await initializeCloudSync() || !cloudAuth) throw new Error("احفظ إعدادات Firebase أولًا.");
-          await cloudAuth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
-          await cloudAuth.createUserWithEmailAndPassword(byId("cloud-email").value.trim(), byId("cloud-password").value);
-          byId("cloud-password").value = "";
-          byId("cloud-account-status").textContent = "أُنشئ الحساب وتم تسجيل الدخول. جارٍ إعداد المزامنة.";
-        } catch (error) {
-          console.error("Firebase email/password account creation failed:", error);
-          byId("cloud-account-status").textContent = `تعذر إنشاء الحساب: ${error.message || error.code}. استخدم كلمة مرور من 6 أحرف على الأقل.`;
-          setCloudStatus("تعذر إنشاء الحساب", "error");
         }
       });
       byId("cloud-sign-out").addEventListener("click", async () => {
@@ -1524,6 +2219,15 @@
           ...collectLocalCloudRecords().keys(),
           ...Object.keys(cloudSyncMetadata.tombstones)
         ]));
+        if (activeSession.ready) {
+          attachCompanyLeadsListener();
+          void flushPendingCompanySettings();
+          pendingCompanyLeadIds.forEach(id => {
+            const lead = leads.find(item => item.id === id);
+            if (lead && !companyLeadWriteQueues.has(id)) void writeCompanyLead(lead).catch(() => {});
+          });
+          void flushPendingLeadActions();
+        }
       });
       window.addEventListener("online", () => {
         if (!cloudUser) {
@@ -1532,6 +2236,11 @@
         }
         setCloudStatus("عاد الاتصال · جارٍ مزامنة التغييرات", "pending");
         attachCloudListener();
+        if (activeSession.ready) {
+          attachCompanyLeadsListener();
+          void flushPendingCompanySettings();
+          void flushPendingLeadActions();
+        }
       });
       window.addEventListener("offline", () => {
         if (cloudUser) setCloudStatus("أوفلاين · التغييرات محفوظة محليًا", "pending");
@@ -1549,6 +2258,7 @@
       byId("today-label").textContent = arabicDate();
 
       function switchTab(tabName) {
+        if (tabName === "admin" && (!activeSession.ready || activeSession.role !== "admin")) tabName = "crm";
         document.querySelectorAll(".tab-button").forEach(button => {
           const selected = button.dataset.tab === tabName;
           button.classList.toggle("active", selected);
@@ -1563,6 +2273,8 @@
         if (tabName === "analytics") renderAnalytics();
         if (tabName === "scheduler") renderAppointments();
         if (tabName === "archive") renderArchive();
+        if (tabName === "actions") renderPipeline();
+        if (tabName === "admin") renderAdminDashboard();
       }
 
       document.querySelectorAll(".tab-button").forEach((button, index, buttons) => {
@@ -1570,10 +2282,12 @@
         button.addEventListener("keydown", event => {
           if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
           event.preventDefault();
-          const targetIndex = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 :
-            (index + (event.key === "ArrowLeft" ? 1 : -1) + buttons.length) % buttons.length;
-          buttons[targetIndex].focus();
-          switchTab(buttons[targetIndex].dataset.tab);
+          const visibleButtons = Array.from(buttons).filter(item => !item.hidden);
+          const currentIndex = visibleButtons.indexOf(button);
+          const targetIndex = event.key === "Home" ? 0 : event.key === "End" ? visibleButtons.length - 1 :
+            (currentIndex + (event.key === "ArrowLeft" ? 1 : -1) + visibleButtons.length) % visibleButtons.length;
+          visibleButtons[targetIndex].focus();
+          switchTab(visibleButtons[targetIndex].dataset.tab);
         });
         document.querySelectorAll("[data-open-tab]").forEach(button => {
           button.addEventListener("click", () => {
@@ -1632,9 +2346,16 @@
       function leadCardHTML(lead, locked = false) {
         const interest = interestLabels[lead.interest] || interestLabels.warm;
         const waNumber = String(lead.phone || "").replace(/\D/g, "").replace(/^00/, "");
-        const waUrl = `https://wa.me/${encodeURIComponent(waNumber)}?text=${encodeURIComponent(`مرحبًا ${lead.name}، معك فريق MJK بخصوص ${lead.project || "العقار"}.`)}`;
-        const disabled = locked ? "disabled" : "";
-        const deleteDisabled = lead.sourceBatchId ? 'disabled title="استخدم أرشفة غير مهتم للحفاظ على اكتمال دفعة الـ50 عميلًا."' : "";
+        const templateText = (template, subjectLead = lead) => String(template || "")
+          .replace(/\{name\}/g, subjectLead.name || "")
+          .replace(/\{project\}/g, subjectLead.project || "العقار");
+        const waUrl = `https://wa.me/${encodeURIComponent(waNumber)}?text=${encodeURIComponent(templateText(companySettings.whatsappTemplate))}`;
+        const mailSubject = templateText(companySettings.emailSubject);
+        const mailBody = templateText(companySettings.emailTemplate);
+        const dialNumber = String(lead.phone || "").replace(/[^\d+]/g, "");
+        const disabled = locked || !canModifyLead(lead) ? "disabled" : "";
+        const statusClass = lead.completed ? "completed" : lead.vip ? "vip" : (lead.status === "lost" || lead.archived ? "rejected" : ["contacted", "visited", "reserved", "callback"].includes(lead.status) ? "followup" : lead.status === "won" ? "won" : "new");
+        const statusLabel = leadStatuses[lead.status] || leadStatuses.new;
         const details = [
           ["الهاتف", (lead.phones || [lead.phone]).filter(Boolean).join(" · "), true], ["جهة العمل", lead.company, false],
           ["المسمى الوظيفي", lead.jobTitle, false], ["البريد الإلكتروني", lead.email, true],
@@ -1643,13 +2364,14 @@
         return `<article class="lead-card ${lead.vip ? "is-vip" : ""} ${lead.completed ? "is-complete" : ""} ${lead.archived ? "is-archived" : ""}" data-lead-card="${escapeHTML(lead.id)}">
           <div class="lead-card-head"><div><div class="lead-card-name">${escapeHTML(lead.name || "بدون اسم")}</div>
             <div class="lead-card-tags"><span class="interest ${interest.cls}">${interest.emoji} ${interest.label}</span>
+              <span class="lead-status-badge lead-status-${statusClass}">${escapeHTML(statusLabel)}</span>
               ${lead.completed ? '<span class="tag-label">⭐ مكتمل · نجمة واحدة</span>' : ""}
               ${lead.vip ? '<span class="tag-label" style="color:#ffd873;border-color:#9c710e">👑 VIP</span>' : ""}
               ${lead.archived ? '<span class="tag-label">📦 مؤرشف · غير مهتم</span>' : ""}
               ${lead.callLater ? `<span class="tag-label">📞 إعادة اتصال${lead.callbackDate ? ` · ${escapeHTML(lead.callbackDate)}` : ""}</span>` : ""}
-              ${lead.sourceBatchId ? `<span class="tag-label">دفعة CRM · الغرفة ${integer.format(lead.roomIndex || 1)}</span>` : ""}
+              ${lead.batchId || lead.sourceBatchId ? `<span class="tag-label">${escapeHTML(lead.batchName || "دفعة CRM")} · الغرفة ${integer.format(lead.roomIndex || 1)}</span>` : ""}
             </div>
-          </div><button class="btn btn-danger small-btn" type="button" data-lead-delete="${escapeHTML(lead.id)}" aria-label="حذف ${escapeHTML(lead.name || "العميل")}" ${deleteDisabled}>حذف</button></div>
+          </div><button class="btn btn-quiet small-btn" type="button" data-lead-history="${escapeHTML(lead.id)}">سجل التفاعلات</button></div>
           <div class="lead-detail-grid">${details.map(([label, value, ltr]) => `<div class="lead-detail"${ltr ? ' dir="ltr"' : ""}><span>${label}</span>${escapeHTML(value)}</div>`).join("")}
           ${lead.idNumber ? `<div class="lead-detail" dir="ltr"><span>ID / المعرف</span>${escapeHTML(lead.idNumber)}</div>` : ""}
           ${lead.network ? `<div class="lead-detail"><span>شبكة المحمول</span>${escapeHTML(lead.network)}</div>` : ""}
@@ -1661,8 +2383,12 @@
             <button class="btn lead-action-archive" data-lead-action="not-interested" data-lead-id="${escapeHTML(lead.id)}" type="button" ${disabled}>❌ غير مهتم</button>
             <button class="btn lead-action-vip" data-lead-action="vip" data-lead-id="${escapeHTML(lead.id)}" type="button" ${disabled}>${lead.vip ? "👑 VIP مفعل" : "👑 عميل مهم"}</button>
             <button class="btn lead-action-callback" data-lead-action="callback" data-lead-id="${escapeHTML(lead.id)}" type="button" ${disabled}>📞 لم يرد / لاحقًا</button>
-            <a class="btn btn-whatsapp" data-lead-action="whatsapp" data-lead-id="${escapeHTML(lead.id)}" href="${waUrl}" target="_blank" rel="noopener noreferrer" aria-label="واتساب ${escapeHTML(lead.name || "")}">💬 واتساب</a>
+            ${featureEnabled("whatsapp") ? `<a class="btn btn-whatsapp" data-lead-action="whatsapp" data-lead-id="${escapeHTML(lead.id)}" href="${waUrl}" target="_blank" rel="noopener noreferrer" aria-label="واتساب ${escapeHTML(lead.name || "")}">💬 واتساب</a>` : '<span class="module-state">واتساب · معطّل من الإدارة</span>'}
+            ${featureEnabled("voip") ? `<a class="btn btn-secondary" data-lead-action="call" data-lead-id="${escapeHTML(lead.id)}" href="tel:${encodeURIComponent(dialNumber)}">📞 اتصال</a>` : ""}
+            ${featureEnabled("emailAutomation") && lead.email ? `<a class="btn btn-secondary" data-lead-action="email" data-lead-id="${escapeHTML(lead.id)}" href="mailto:${encodeURIComponent(lead.email)}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}">✉️ بريد</a>` : ""}
+            ${featureEnabled("invoicing") && !locked && canModifyLead(lead) ? `<button class="btn module-feature-button" data-lead-action="invoice" data-lead-id="${escapeHTML(lead.id)}" type="button">🧾 عرض سعر</button>` : ""}
           </div>${locked ? '<div class="lead-lock-note">🔒 تُفتح هذه الغرفة تلقائيًا بعد إكمال الغرفة السابقة.</div>' : ""}
+          ${activeSession.role === "admin" ? `<label class="lead-assign-control"><span>تعيين الوكيل</span><select class="control" data-lead-assign="${escapeHTML(lead.id)}"><option value="">غير معيّن (للمدير)</option>${teamProfiles.map(agent => `<option value="${escapeHTML(agent.uid)}" ${lead.assignedTo === agent.uid ? "selected" : ""}>${escapeHTML(agent.email || agent.displayName || agent.uid)}</option>`).join("")}</select></label>` : ""}
         </article>`;
       }
 
@@ -1670,7 +2396,8 @@
         const query = byId("lead-search").value.trim().toLocaleLowerCase();
         const filter = byId("interest-filter").value;
         const statusFilter = byId("lead-status-filter").value;
-        const filtered = leads.filter(lead => {
+        const visibleLeads = leads.filter(canViewLead);
+        const filtered = visibleLeads.filter(lead => {
           const matchesFilter = filter === "all" || lead.interest === filter;
           const matchesStatus = statusFilter === "all" ||
             (statusFilter === "call-list" ? !lead.archived && lead.status !== "lost" && !lead.completed : statusFilter === "archived" ? Boolean(lead.archived || lead.status === "lost") : (lead.status || "new") === statusFilter);
@@ -1684,14 +2411,15 @@
         const cardsContainer = byId("lead-cards");
         const assignedIds = new Set();
         const batches = new Map();
-        leads.filter(lead => lead.sourceBatchId).forEach(lead => {
-          const bucket = batches.get(lead.sourceBatchId) || [];
+        visibleLeads.filter(lead => lead.sourceBatchId || lead.batchId).forEach(lead => {
+          const batchId = lead.batchId || lead.sourceBatchId;
+          const bucket = batches.get(batchId) || [];
           bucket.push(lead);
-          batches.set(lead.sourceBatchId, bucket);
+          batches.set(batchId, bucket);
         });
         const batchEntries = new Map((appState.crmBatches || []).map(batch => [batch.id, batch]));
         batches.forEach((records, id) => {
-          if (!batchEntries.has(id)) batchEntries.set(id, { id, label: "دفعة CRM", total: records.length });
+          if (!batchEntries.has(id)) batchEntries.set(id, { id, label: records[0]?.batchName || "دفعة CRM", total: records.length });
         });
         let rendered = "";
         batchEntries.forEach(batch => {
@@ -1724,12 +2452,353 @@
         if (looseLeads.length) rendered += `<section class="lead-batch"><header class="lead-batch-head"><div><h3 class="lead-batch-title">عملاء CRM</h3><div class="lead-batch-meta">${integer.format(looseLeads.length)} عميل</div></div></header><div class="lead-cards">${looseLeads.map(lead => leadCardHTML(lead)).join("")}</div></section>`;
         cardsContainer.innerHTML = rendered;
         byId("lead-empty").hidden = filtered.length > 0;
-        byId("lead-count-note").textContent = `${integer.format(filtered.length)} من ${integer.format(leads.length)} عميل`;
-        byId("total-leads").textContent = integer.format(leads.length);
-        byId("hot-leads").textContent = integer.format(leads.filter(lead => lead.interest === "hot").length);
+        byId("lead-count-note").textContent = `${integer.format(filtered.length)} من ${integer.format(visibleLeads.length)} عميل`;
+        byId("total-leads").textContent = integer.format(visibleLeads.length);
+        byId("hot-leads").textContent = integer.format(visibleLeads.filter(lead => lead.interest === "hot").length);
         const today = localDateInput();
-        byId("today-followups").textContent = integer.format(leads.filter(lead => lead.date === today && !lead.archived && lead.status !== "lost").length);
+        byId("today-followups").textContent = integer.format(visibleLeads.filter(lead => lead.date === today && !lead.archived && lead.status !== "lost").length);
       }
+      function renderPipeline() {
+        const visibleLeads = leads.filter(canViewLead);
+        const select = {
+          rejected: lead => lead.status === "lost" || lead.archived,
+          vip: lead => Boolean(lead.vip),
+          followup: lead => !lead.completed && ["new", "contacted", "callback", "visited", "reserved"].includes(lead.status || "new"),
+          completed: lead => lead.completed || lead.status === "won"
+        }[activePipeline];
+        const filtered = visibleLeads.filter(select).sort((a, b) =>
+          String(b.lastAction?.createdAt || b.updatedAt || "").localeCompare(String(a.lastAction?.createdAt || a.updatedAt || "")));
+        byId("pipeline-list").innerHTML = filtered.map(lead => `<article class="activity-card">
+          <div class="archive-item-head"><div><strong>${escapeHTML(lead.name || "بدون اسم")}</strong><span class="lead-status-badge lead-status-${escapeHTML(lead.status === "lost" ? "rejected" : lead.vip ? "vip" : lead.completed ? "completed" : "followup")}">${escapeHTML(leadStatuses[lead.status] || leadStatuses.new)}</span></div><button class="btn btn-quiet small-btn" type="button" data-lead-history="${escapeHTML(lead.id)}">السجل الكامل</button></div>
+          <div class="lead-detail-grid"><div class="lead-detail"><span>الهاتف</span>${escapeHTML(lead.phone || "")}</div><div class="lead-detail"><span>المشروع</span>${escapeHTML(lead.project || "—")}</div>
+          <div class="lead-detail"><span>آخر إجراء</span>${escapeHTML(lead.lastAction?.action || "—")}</div><div class="lead-detail"><span>بواسطة</span>${escapeHTML(lead.lastAction?.agentName || "—")}</div></div>
+          <p class="card-caption">${escapeHTML(lead.lastAction?.notes || lead.notes || "لا توجد ملاحظات تفاعل.")}</p>
+        </article>`).join("");
+        byId("pipeline-empty").hidden = filtered.length > 0;
+      }
+      function renderAdminDashboard() {
+        if (!activeSession.ready || activeSession.role !== "admin") return;
+        const companyLeads = leads.filter(lead => !lead.companyId || lead.companyId === activeSession.companyId);
+        const completed = companyLeads.filter(lead => lead.completed || lead.status === "won").length;
+        byId("admin-summary").innerHTML = `<article class="summary-card"><span class="summary-label">عملاء الشركة</span><strong class="summary-value">${integer.format(companyLeads.length)}</strong></article>
+          <article class="summary-card"><span class="summary-label">صفقات مكتملة</span><strong class="summary-value">${integer.format(completed)}</strong></article>
+          <article class="summary-card"><span class="summary-label">نسبة التحويل</span><strong class="summary-value">${companyLeads.length ? Math.round(completed / companyLeads.length * 100) : 0}%</strong></article>
+          <article class="summary-card"><span class="summary-label">وكلاء الفريق</span><strong class="summary-value">${integer.format(teamProfiles.length)}</strong></article>`;
+        byId("team-agent-list").innerHTML = teamProfiles.length ? teamProfiles.map(agent => {
+          const assigned = companyLeads.filter(lead => [agent.uid, agent.email].filter(Boolean).includes(lead.assignedTo));
+          const conversions = assigned.filter(lead => lead.completed || lead.status === "won").length;
+          return `<article class="team-card"><strong>${escapeHTML(agent.displayName || agent.email || agent.uid)}</strong>
+            <span class="card-caption">${escapeHTML(agent.email || agent.uid)}</span>
+            <div class="result-stack"><div class="result-row"><span>عملاء نشطون</span><strong>${integer.format(assigned.filter(lead => !lead.completed && lead.status !== "lost").length)}</strong></div>
+            <div class="result-row"><span>التحويلات</span><strong>${integer.format(conversions)} · ${assigned.length ? Math.round(conversions / assigned.length * 100) : 0}%</strong></div></div></article>`;
+        }).join("") : '<div class="table-empty">لا يوجد وكلاء مسجلون للشركة. أضف حساب Auth وملف users/{uid} من Firebase Console.</div>';
+        const batchMap = new Map();
+        companyLeads.forEach(lead => {
+          const id = lead.batchId || lead.sourceBatchId;
+          if (id && !batchMap.has(id)) batchMap.set(id, lead.batchName || "دفعة CRM");
+        });
+        const batchOptions = [...batchMap].map(([id, name]) => `<option value="${escapeHTML(id)}">${escapeHTML(name)}</option>`).join("");
+        const agentOptions = teamProfiles.map(agent => `<option value="${escapeHTML(agent.uid)}">${escapeHTML(agent.email || agent.displayName || agent.uid)}</option>`).join("");
+        byId("admin-batch-select").innerHTML = batchOptions || '<option value="">لا توجد دفعات</option>';
+        byId("admin-batch-agent").innerHTML = agentOptions || '<option value="">لا يوجد وكلاء</option>';
+        byId("admin-add-agent").innerHTML = `<option value="">غير معيّن</option>${agentOptions}`;
+        if (featureEnabled("advancedAnalytics")) renderModuleRoi();
+      }
+      function resolveMetaPath(source, path) {
+        return String(path || "").split(".").filter(Boolean).reduce((value, segment) => {
+          if (["__proto__", "prototype", "constructor"].includes(segment)) return undefined;
+          return value && typeof value === "object" ? value[segment] : undefined;
+        }, source);
+      }
+      function mapMetaLead(source, mapping) {
+        const allowedFields = ["name", "phone", "email", "company", "jobTitle", "location", "project"];
+        const mapped = {};
+        allowedFields.forEach(field => {
+          const value = resolveMetaPath(source, mapping[field]);
+          if (["string", "number"].includes(typeof value)) mapped[field] = String(value).trim();
+        });
+        return mapped;
+      }
+      function previewMetaMapping() {
+        try {
+          const mapping = JSON.parse(byId("meta-field-mapping").value);
+          if (!mapping || typeof mapping !== "object" || Array.isArray(mapping)) throw new Error("خريطة الحقول يجب أن تكون كائن JSON.");
+          const sample = JSON.parse(byId("meta-sample-json").value);
+          if (!sample || typeof sample !== "object" || Array.isArray(sample)) throw new Error("عينة البيانات يجب أن تكون كائن JSON.");
+          metaPreviewLead = mapMetaLead(sample, mapping);
+          const rows = Object.entries(metaPreviewLead).map(([key, value]) => `${key}: ${value}`);
+          byId("meta-mapping-preview").textContent = rows.length ? rows.join("\n") : "لم يتم العثور على قيم. راجع مسارات الحقول والعينة.";
+          byId("import-meta-sample").hidden = !featureEnabled("metaLeadAds") || !metaPreviewLead.name || !metaPreviewLead.phone;
+          if (!metaPreviewLead.name || !metaPreviewLead.phone) showToast("المعاينة تحتاج حقلَي الاسم والهاتف قبل الاستيراد.");
+        } catch (error) {
+          metaPreviewLead = null;
+          byId("meta-mapping-preview").textContent = error.message || "تعذر تحليل JSON.";
+          byId("import-meta-sample").hidden = true;
+          showToast(`تعذر معاينة خريطة Meta: ${error.message || error}.`);
+        }
+      }
+      function refreshInvoicePreview() {
+        const price = Number(byId("invoice-price").value) || 0;
+        const downPayment = Number(byId("invoice-down-payment").value) || 0;
+        const installments = Number(byId("invoice-installments").value) || 0;
+        const remaining = price - downPayment;
+        const monthly = installments > 0 ? remaining / installments : remaining;
+        byId("invoice-calculation").textContent = `الإجمالي: ${money.format(price)} ج.م · المقدم: ${money.format(downPayment)} ج.م · المتبقي: ${money.format(remaining)} ج.م · القسط الشهري التقريبي: ${money.format(monthly)} ج.م`;
+        const lead = leads.find(item => item.id === byId("invoice-lead-id").value);
+        byId("invoice-preview-customer").textContent = `العميل: ${lead?.name || "—"} · الهاتف: ${lead?.phone || "—"}`;
+        byId("invoice-preview-details").textContent = `${byId("invoice-project").value || "المشروع / الوحدة"}\nالسعر: ${money.format(price)} ج.م\nالمقدم: ${money.format(downPayment)} ج.م\n${installments ? `${installments} قسطًا شهريًا × ${money.format(monthly)} ج.م` : "السداد المتبقي حسب الاتفاق"}`;
+        byId("invoice-preview-notes").textContent = byId("invoice-notes").value || "";
+      }
+      function openInvoiceBuilder(lead) {
+        if (!featureEnabled("invoicing") || !canModifyLead(lead)) return;
+        byId("invoice-lead-id").value = lead.id;
+        byId("invoice-lead-label").textContent = `${lead.name || "العميل"} · ${lead.phone || ""}`;
+        byId("invoice-project").value = lead.project || "";
+        byId("invoice-price").value = Number(lead.quote?.amount) || "";
+        byId("invoice-down-payment").value = Number(lead.quote?.downPayment) || 0;
+        byId("invoice-installments").value = Number(lead.quote?.installments) || 0;
+        byId("invoice-notes").value = lead.quote?.notes || "";
+        refreshInvoicePreview();
+        byId("invoice-dialog").showModal();
+      }
+      function leadPayloadMatches(left, right) {
+        const leftData = { ...left };
+        const rightData = { ...right };
+        delete leftData.updatedAt;
+        delete rightData.updatedAt;
+        return JSON.stringify(leftData) === JSON.stringify(rightData);
+      }
+      function renderLeadHistory(entries) {
+        byId("lead-history-list").innerHTML = entries.map(entry => `<article class="timeline-entry">
+          <strong>${escapeHTML(entry.action || "تحديث العميل")}</strong>
+          <div class="card-caption">${escapeHTML(entry.agentName || entry.agentEmail || entry.agentId || "مستخدم")} · ${escapeHTML(entry.previousStatus || "—")} ← ${escapeHTML(entry.status || "—")}</div>
+          <div>${escapeHTML(entry.notes || "بدون ملاحظات")}</div>
+          <small class="card-caption">${escapeHTML(entry.createdAt ? new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium", timeStyle: "short" }).format(new Date(entry.createdAt)) : "")}</small>
+        </article>`).join("");
+        byId("lead-history-empty").hidden = entries.length > 0;
+      }
+      function openLeadHistory(leadId) {
+        const lead = leads.find(item => item.id === leadId && canViewLead(item));
+        if (!lead) return;
+        if (leadHistoryListener) leadHistoryListener();
+        const localEntries = companyActions.filter(entry => entry.leadId === leadId);
+        byId("lead-history-title").textContent = `سجل تفاعلات ${lead.name || "العميل"}`;
+        renderLeadHistory(localEntries);
+        byId("lead-history-dialog").showModal();
+        if (activeSession.ready && navigator.onLine) {
+          leadHistoryListener = companyLeadsPath().doc(leadId).collection("actions").orderBy("createdAt", "desc")
+            .onSnapshot(snapshot => {
+              const remote = snapshot.docs.map(document => document.data());
+              const remoteIds = new Set(remote.map(entry => entry.id));
+              renderLeadHistory([...remote, ...localEntries.filter(entry => !remoteIds.has(entry.id))]
+                .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt))));
+            }, error => {
+              console.error("Could not load lead interaction history:", error);
+              showToast(`تعذر تحميل سجل العميل: ${error.message || error.code}.`);
+            });
+        }
+      }
+      byId("lead-history-close").addEventListener("click", () => {
+        if (leadHistoryListener) leadHistoryListener();
+        leadHistoryListener = null;
+        byId("lead-history-dialog").close();
+      });
+      byId("lead-history-dialog").addEventListener("close", () => {
+        if (leadHistoryListener) leadHistoryListener();
+        leadHistoryListener = null;
+      });
+      byId("pipeline-list").addEventListener("click", event => {
+        const button = event.target.closest("[data-lead-history]");
+        if (button) openLeadHistory(button.dataset.leadHistory);
+      });
+      document.querySelectorAll("[data-pipeline]").forEach(button => button.addEventListener("click", () => {
+        activePipeline = button.dataset.pipeline;
+        document.querySelectorAll("[data-pipeline]").forEach(tab => tab.classList.toggle("active", tab === button));
+        renderPipeline();
+      }));
+      document.querySelectorAll("[data-admin-panel]").forEach(button => button.addEventListener("click", () => {
+        const selected = button.dataset.adminPanel;
+        document.querySelectorAll("[data-admin-panel]").forEach(tab => {
+          const isSelected = tab === button;
+          tab.classList.toggle("active", isSelected);
+          tab.setAttribute("aria-selected", String(isSelected));
+        });
+        document.querySelectorAll(".admin-subpanel").forEach(panel => {
+          panel.hidden = panel.id !== `admin-panel-${selected}`;
+        });
+        if (selected === "modules") renderCompanyModules();
+      }));
+      byId("company-module-list").addEventListener("change", async event => {
+        const toggle = event.target.closest("[data-company-feature]");
+        if (!toggle || activeSession.role !== "admin") return;
+        toggle.disabled = true;
+        await saveCompanySettings({ features: { [toggle.dataset.companyFeature]: toggle.checked } });
+        toggle.disabled = false;
+      });
+      byId("save-module-templates").addEventListener("click", async () => {
+        if (activeSession.role !== "admin") return;
+        const saved = await saveCompanySettings({
+          whatsappTemplate: byId("module-whatsapp-template").value.trim(),
+          emailSubject: byId("module-email-subject").value.trim(),
+          emailTemplate: byId("module-email-template").value
+        });
+        if (saved) showToast("تم حفظ قوالب الشركة.");
+      });
+      byId("preview-meta-mapping").addEventListener("click", previewMetaMapping);
+      byId("save-meta-settings").addEventListener("click", async () => {
+        if (activeSession.role !== "admin") return;
+        let mapping;
+        try {
+          mapping = JSON.parse(byId("meta-field-mapping").value);
+          if (!mapping || typeof mapping !== "object" || Array.isArray(mapping)) throw new Error("خريطة الحقول ليست كائن JSON.");
+          const validFields = new Set(["name", "phone", "email", "company", "jobTitle", "location", "project"]);
+          Object.entries(mapping).forEach(([field, path]) => {
+            if (!validFields.has(field) || typeof path !== "string" || path.length > 200) throw new Error(`تعريف حقل غير صالح: ${field}`);
+          });
+          const webhookUrl = byId("meta-webhook-url").value.trim();
+          if (webhookUrl && new URL(webhookUrl).protocol !== "https:") throw new Error("يجب أن يستخدم عنوان الخدمة HTTPS.");
+          const saved = await saveCompanySettings({ metaFieldMapping: mapping, metaWebhookUrl: webhookUrl });
+          if (saved) showToast("تم حفظ إعدادات Meta وخريطة الحقول.");
+        } catch (error) {
+          showToast(`تعذر حفظ إعداد Meta: ${error.message || error}.`);
+        }
+      });
+      byId("import-meta-sample").addEventListener("click", async () => {
+        if (!featureEnabled("metaLeadAds") || !metaPreviewLead?.name || !metaPreviewLead?.phone) return;
+        if (cloudUser && !activeSession.ready) { showToast("يلزم تسجيل الدخول بحساب شركة صالح للاستيراد."); return; }
+        const phone = normalizePhone(metaPreviewLead.phone, "auto");
+        if (!phone) { showToast("رقم الهاتف المستخرج من العينة غير صالح."); return; }
+        const lead = {
+          id: makeId("meta-lead"), ...metaPreviewLead, phone,
+          project: metaPreviewLead.project || "Meta Lead Ads",
+          companyId: activeSession.ready ? activeSession.companyId : "",
+          assignedTo: activeSession.role === "agent" ? activeSession.uid : "",
+          assignedAgentEmail: activeSession.role === "agent" ? activeSession.email : "",
+          interest: "warm", status: "new", date: "", notes: "استيراد معاينة Meta Lead Ads",
+          completed: false, vip: false, archived: false, createdAt: new Date().toISOString(),
+          source: "meta-lead-ads"
+        };
+        leads = [lead, ...leads];
+        if (!persistLeads()) { leads = leads.filter(item => item.id !== lead.id); return; }
+        renderLeads();
+        await writeLeadAudit(lead, "استيراد Meta Lead Ads", "", "أُنشئ من عينة JSON باستخدام خريطة الحقول.");
+        showToast("تم استيراد العميل من عينة Meta إلى CRM.");
+      });
+      byId("invoice-close").addEventListener("click", () => byId("invoice-dialog").close());
+      ["invoice-project", "invoice-price", "invoice-down-payment", "invoice-installments", "invoice-notes"].forEach(id => {
+        byId(id).addEventListener("input", refreshInvoicePreview);
+      });
+      byId("invoice-form").addEventListener("submit", async event => {
+        event.preventDefault();
+        const lead = leads.find(item => item.id === byId("invoice-lead-id").value);
+        if (!lead || !featureEnabled("invoicing") || !canModifyLead(lead)) {
+          showToast("لا تملك صلاحية إنشاء عرض سعر لهذا العميل.");
+          return;
+        }
+        const amount = Number(byId("invoice-price").value);
+        const downPayment = Number(byId("invoice-down-payment").value);
+        const installments = Number(byId("invoice-installments").value);
+        if (!Number.isFinite(amount) || amount <= 0 || !Number.isFinite(downPayment) || downPayment < 0 ||
+            downPayment > amount || !Number.isInteger(installments) || installments < 0) {
+          showToast("تحقق من السعر والمقدم وعدد الأقساط.");
+          return;
+        }
+        const previousQuote = lead.quote;
+        lead.quote = {
+          id: makeId("quote"), project: byId("invoice-project").value.trim(), amount, downPayment, installments,
+          monthlyInstallment: installments ? (amount - downPayment) / installments : amount - downPayment,
+          notes: byId("invoice-notes").value.trim(), createdAt: new Date().toISOString(),
+          createdBy: activeSession.uid || "local"
+        };
+        if (!persistLeads()) { lead.quote = previousQuote; return; }
+        await writeLeadAudit(lead, "إنشاء عرض سعر", lead.status || "new",
+          `عرض ${lead.quote.project} بقيمة ${money.format(amount)} ج.م · مقدم ${money.format(downPayment)} ج.م · ${installments} قسطًا.`);
+        document.body.classList.add("print-invoice");
+        window.print();
+        window.setTimeout(() => document.body.classList.remove("print-invoice"), 1000);
+        byId("invoice-dialog").close();
+        showToast("تم حفظ عرض السعر. اختر Save as PDF من نافذة الطباعة.");
+      });
+      window.addEventListener("afterprint", () => document.body.classList.remove("print-invoice"));
+      byId("lead-cards").addEventListener("change", async event => {
+        const selector = event.target.closest("[data-lead-assign]");
+        if (!selector || activeSession.role !== "admin") return;
+        const lead = leads.find(item => item.id === selector.dataset.leadAssign);
+        if (!lead) return;
+        const previousAssignee = lead.assignedTo || "";
+        const previousAssigneeEmail = lead.assignedAgentEmail || "";
+        const previousStatus = lead.status || "new";
+        lead.assignedTo = selector.value || "";
+        lead.assignedAgentEmail = teamProfiles.find(agent => agent.uid === selector.value)?.email || "";
+        if (!persistLeads()) {
+          lead.assignedTo = previousAssignee;
+          lead.assignedAgentEmail = previousAssigneeEmail;
+          renderLeads();
+          return;
+        }
+        await writeLeadAudit(lead, "تعيين / إعادة تعيين الوكيل", previousStatus, `من ${previousAssignee || "غير معيّن"} إلى ${lead.assignedTo || "غير معيّن"}`);
+        renderLeads();
+      });
+      byId("admin-assign-batch").addEventListener("click", async () => {
+        if (activeSession.role !== "admin") return;
+        const batchId = byId("admin-batch-select").value;
+        const assignedTo = byId("admin-batch-agent").value;
+        if (!batchId || !assignedTo) { showToast("اختر دفعة ووكيلًا صالحين."); return; }
+        const agent = teamProfiles.find(item => item.uid === assignedTo);
+        const batchLeads = leads.filter(lead => (lead.batchId || lead.sourceBatchId) === batchId);
+        const previousAssignments = batchLeads.map(lead => ({
+          lead, assignedTo: lead.assignedTo || "", assignedAgentEmail: lead.assignedAgentEmail || ""
+        }));
+        batchLeads.forEach(lead => { lead.assignedTo = assignedTo; lead.assignedAgentEmail = agent?.email || ""; });
+        if (!persistLeads()) {
+          previousAssignments.forEach(({ lead, assignedTo: previousAssignedTo, assignedAgentEmail }) => {
+            lead.assignedTo = previousAssignedTo;
+            lead.assignedAgentEmail = assignedAgentEmail;
+          });
+          renderLeads();
+          return;
+        }
+        renderLeads();
+        await Promise.all(batchLeads.map(lead => writeLeadAudit(lead, "تعيين دفعة", lead.status || "new", `أُسندت الدفعة إلى ${agent?.email || assignedTo}`)));
+        showToast(`تم تعيين ${batchLeads.length} عميلًا إلى ${agent?.email || assignedTo}.`);
+      });
+      byId("admin-add-open").addEventListener("click", () => {
+        if (activeSession.role === "admin") byId("admin-add-dialog").showModal();
+      });
+      byId("admin-add-close").addEventListener("click", () => byId("admin-add-dialog").close());
+      byId("admin-add-form").addEventListener("submit", async event => {
+        event.preventDefault();
+        if (activeSession.role !== "admin") return;
+        const batchId = byId("admin-add-batch").value.trim() ? makeId("campaign") : "";
+        const batchName = batchId ? `دفعة يدوية ${new Date().toLocaleDateString("ar-EG")}` : "";
+        const lines = byId("admin-add-batch").value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+        const entries = lines.length ? lines.map(line => {
+          const columns = line.split(/[,;\t]/).map(value => value.trim());
+          return { name: columns[0] || "", phone: columns[1] || "", project: columns.slice(2).join(" ") };
+        }) : [{ name: byId("admin-add-name").value.trim(), phone: byId("admin-add-phone").value.trim(), project: byId("admin-add-project").value.trim() }];
+        if (entries.some(entry => !entry.name || !entry.phone)) { showToast("تأكد من إدخال اسم ورقم هاتف صالحين لكل عميل."); return; }
+        const assignedTo = byId("admin-add-agent").value || "";
+        const agent = teamProfiles.find(item => item.uid === assignedTo);
+        const created = [];
+        for (const entry of entries) {
+          const phone = normalizePhone(entry.phone, "auto");
+          if (!phone) { showToast(`رقم الهاتف غير صالح: ${entry.phone}`); return; }
+          created.push({
+            id: makeId("lead"), name: entry.name, phone, project: entry.project || byId("admin-add-project").value.trim(),
+            interest: "warm", status: "new", date: "", notes: "", companyId: activeSession.companyId,
+            assignedTo, assignedAgentEmail: agent?.email || "", batchId, batchName,
+            createdAt: new Date().toISOString(), completed: false, archived: false, vip: false
+          });
+        }
+        const previousLeads = leads;
+        leads = [...created, ...leads];
+        if (!persistLeads()) { leads = previousLeads; return; }
+        renderLeads();
+        await Promise.all(created.map(lead => writeLeadAudit(lead, batchId ? "إنشاء عميل ضمن دفعة" : "إنشاء عميل", "", "أُنشئ من لوحة الإدارة.")));
+        byId("admin-add-form").reset();
+        byId("admin-add-dialog").close();
+        showToast(`تم إنشاء ${created.length} عميلًا وإسنادهم بنجاح.`);
+      });
       function maybeCelebrateCompletedBatch(batchId) {
         const batch = appState.crmBatches.find(item => item.id === batchId);
         if (!batch || batch.total !== 50 || batch.celebratedAt) return;
@@ -1771,25 +2840,33 @@
         if (resolve) resolve("");
       });
       byId("lead-cards").addEventListener("click", async event => {
-        const deleteButton = event.target.closest("[data-lead-delete]");
-        if (deleteButton) {
-          if (deleteButton.disabled) return;
-          const lead = leads.find(item => item.id === deleteButton.dataset.leadDelete);
-          if (!lead || !window.confirm(`هل تريد حذف بيانات العميل "${lead.name}"؟`)) return;
-          const previousLeads = leads;
-          leads = leads.filter(item => item.id !== lead.id);
-          if (!persistLeads()) { leads = previousLeads; return; }
-          renderLeads();
-          populateAppointmentClients();
-          renderAnalytics();
+        const historyButton = event.target.closest("[data-lead-history]");
+        if (historyButton) {
+          openLeadHistory(historyButton.dataset.leadHistory);
           return;
         }
         const button = event.target.closest("[data-lead-action]");
         if (!button || button.disabled) return;
-        if (button.dataset.leadAction === "whatsapp") return;
         const lead = leads.find(item => item.id === button.dataset.leadId);
         if (!lead) return;
+        if (button.dataset.leadAction === "whatsapp" || button.dataset.leadAction === "email") {
+          if (canModifyLead(lead)) void writeLeadAudit(lead, button.dataset.leadAction === "whatsapp" ? "فتح محادثة WhatsApp" : "فتح رسالة بريد", lead.status || "new");
+          return;
+        }
+        if (button.dataset.leadAction === "call") {
+          if (canModifyLead(lead)) void writeLeadAudit(lead, "بدء اتصال عبر تطبيق الهاتف", lead.status || "new", "بدء اتصال من رابط tel؛ لا يتضمن تسجيلًا صوتيًا.");
+          return;
+        }
+        if (button.dataset.leadAction === "invoice") {
+          openInvoiceBuilder(lead);
+          return;
+        }
+        if (!canModifyLead(lead)) {
+          showToast("ليس لديك صلاحية تعديل هذا العميل.");
+          return;
+        }
         const previousLead = { ...lead };
+        const previousStatus = lead.status || "new";
         const action = button.dataset.leadAction;
         let appointmentsBeforeCallback = null;
         const appointmentsBeforeAction = appState.appointments.map(item => ({ ...item }));
@@ -1877,6 +2954,10 @@
         populateAppointmentClients();
         renderAppointments();
         renderAnalytics();
+        await writeLeadAudit(lead, action, previousStatus,
+          action === "callback" ? `موعد إعادة الاتصال: ${lead.callbackDate || ""}`
+            : action === "interested" ? `موعد المتابعة: ${lead.date || ""}`
+              : action === "vip" ? (lead.vip ? "تم تفعيل أولوية VIP." : "تم إلغاء أولوية VIP.") : "");
         if (action === "done" && lead.completed) maybeCelebrateCompletedBatch(lead.sourceBatchId);
         const messages = {
           done: lead.completed ? `تم تسجيل ${lead.name} كمكتمل وحصل على ⭐.` : `تمت إعادة فتح ${lead.name}.`,
@@ -1888,7 +2969,7 @@
         showToast(messages[action]);
       });
 
-      byId("lead-form").addEventListener("submit", event => {
+      byId("lead-form").addEventListener("submit", async event => {
         event.preventDefault();
         const form = event.currentTarget;
         if (!form.reportValidity()) return;
@@ -1909,7 +2990,10 @@
           interest: String(data.get("interest") || "warm"), date: String(data.get("date") || ""),
           status: String(data.get("status") || "new"),
           expectedCommission: Math.max(0, Number(data.get("expectedCommission")) || 0),
-          notes: String(data.get("notes") || "").trim(), createdAt: new Date().toISOString()
+          notes: String(data.get("notes") || "").trim(), createdAt: new Date().toISOString(),
+          companyId: activeSession.ready ? activeSession.companyId : "",
+          assignedTo: activeSession.role === "agent" ? activeSession.uid : "",
+          assignedAgentEmail: activeSession.role === "agent" ? activeSession.email : ""
         };
         leads.unshift(newLead);
         if (!persistLeads()) { leads = leads.filter(lead => lead.id !== newLead.id); return; }
@@ -1925,7 +3009,8 @@
         renderLeads();
         renderAppointments();
         renderAnalytics();
-        showToast("تم حفظ العميل على هذا الجهاز.");
+        await writeLeadAudit(newLead, "إنشاء عميل", "", "أُضيف من نموذج CRM.");
+        showToast(activeSession.ready ? "تم حفظ العميل ومزامنته مع الشركة." : "تم حفظ العميل على هذا الجهاز.");
       });
       byId("lead-phone").addEventListener("input", () => byId("lead-phone").setCustomValidity(""));
       byId("lead-search").addEventListener("input", renderLeads);
@@ -2805,7 +3890,7 @@
             ${complete ? '<div class="crm-import-note">سيتم إنشاء خمس غرف متتابعة. تُفتح الغرفة التالية بعد إكمال العملاء العشرة في السابقة.</div>' : `<div class="crm-import-note">تحتاج ${integer.format(50 - batch.length)} جهة اتصال أخرى لإرسال دفعة كاملة.</div>`}</article>`;
         }).join("");
       }
-      byId("crm-send-batches").addEventListener("click", event => {
+      byId("crm-send-batches").addEventListener("click", async event => {
         const button = event.target.closest("[data-send-crm-batch]");
         if (!button || button.disabled) return;
         const batchIndex = Number(button.dataset.sendCrmBatch);
@@ -2816,7 +3901,8 @@
         )).length;
         if (duplicateCount && !window.confirm(`يوجد ${integer.format(duplicateCount)} رقم مسجل بالفعل. هل تريد إضافة سجلات جديدة لهذه الدفعة مع الاحتفاظ بالسجلات الحالية؟`)) return;
         const batchId = makeId("crm-batch");
-        const crmBatch = { id: batchId, label: `دفعة CRM ${new Date().toLocaleDateString("ar-EG")}`, total: 50, createdAt: new Date().toISOString() };
+        const batchName = `دفعة CRM ${new Date().toLocaleDateString("ar-EG")}`;
+        const crmBatch = { id: batchId, label: batchName, total: 50, createdAt: new Date().toISOString() };
         const importedLeads = batch.map((record, index) => ({
           id: makeId("lead"), name: record.name || "بدون اسم", phone: record.phone,
           phones: record.phones?.length ? record.phones : [record.phone],
@@ -2824,6 +3910,10 @@
           jobTitle: record.jobTitle || "", company: record.company || "", location: record.location || "",
           project: "مستورد من منقّي البيانات", interest: "warm", date: "", status: "new",
           expectedCommission: 0, notes: "", sourceBatchId: batchId,
+          batchId, batchName,
+          companyId: activeSession.ready ? activeSession.companyId : "",
+          assignedTo: activeSession.role === "agent" ? activeSession.uid : "",
+          assignedAgentEmail: activeSession.role === "agent" ? activeSession.email : "",
           roomIndex: Math.floor(index / 10) + 1, roomPosition: index % 10 + 1,
           completed: false, vip: false, archived: false, createdAt: new Date().toISOString()
         }));
@@ -2841,6 +3931,7 @@
         renderLeads();
         populateAppointmentClients();
         renderAnalytics();
+        await Promise.all(importedLeads.map(lead => writeLeadAudit(lead, "استيراد من منقّي البيانات", "", `أُضيف إلى ${batchName}.`)));
         showToast("تم إرسال 50 عميلًا إلى CRM في 5 غرف، 10 عملاء لكل غرفة.");
         switchTab("crm");
       });
@@ -3393,6 +4484,7 @@
       }
 
       byId("property-price").addEventListener("input", renderAnalytics);
+      renderCompanyModules();
       renderLeads();
       renderLookup();
       populateAppointmentClients();
