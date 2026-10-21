@@ -99,6 +99,24 @@
     .module-settings textarea { min-height:82px; }
     .module-output { overflow:auto;padding:10px;border:1px solid var(--line);border-radius:8px;background:#111414;color:#cbd4cf;font:10px/1.7 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere; }
     .module-feature-button { color:#e8d5a8;border-color:rgba(255,190,48,.25);background:rgba(255,190,48,.06); }
+    .approval-screen { display:none;width:min(560px,calc(100% - 28px));margin:10vh auto;padding:clamp(22px,5vw,38px);border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow);text-align:center; }
+    .approval-screen.is-visible { display:block; }
+    .approval-screen h1 { margin:10px 0 8px;font-size:22px; }
+    .approval-screen p { color:var(--muted);line-height:1.8; }
+    .approval-icon { font-size:38px; }
+    .user-management-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:12px;margin-top:14px; }
+    .user-management-section { padding:15px;border:1px solid var(--line);border-radius:12px;background:var(--surface); }
+    .user-management-section h3 { margin:0;font-size:14px; }
+    .user-management-list { display:grid;gap:9px;margin-top:12px; }
+    .managed-user { padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2); }
+    .managed-user-head { display:flex;justify-content:space-between;align-items:flex-start;gap:8px; }
+    .managed-user-name { font-weight:800;overflow-wrap:anywhere; }
+    .managed-user-meta { margin-top:4px;color:var(--muted);font-size:10px;overflow-wrap:anywhere; }
+    .managed-user-actions { display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:10px; }
+    .managed-user-actions .control { width:auto;min-height:36px; }
+    .approval-subtab[hidden] { display:none; }
+    .admin-subtab[hidden] { display:none; }
+    .signup-full-name[hidden] { display:none; }
     .invoice-dialog { width:min(600px,calc(100vw - 24px));max-height:90vh;overflow:auto;padding:18px;border:1px solid #484f4c;border-radius:14px;color:var(--text);background:#171b1a;box-shadow:var(--shadow); }
     .invoice-dialog::backdrop { background:rgba(0,0,0,.72);backdrop-filter:blur(3px); }
     .reset-short { display:none; }
@@ -435,7 +453,17 @@
 </head>
 <body>
   <noscript><div class="noscript">يرجى تفعيل JavaScript لاستخدام أدوات لوحة MJK.</div></noscript>
-  <div class="app-shell">
+  <section class="approval-screen" id="approval-screen" role="status" aria-live="polite" aria-labelledby="approval-title">
+    <div class="approval-icon" id="approval-icon">⏳</div>
+    <h1 id="approval-title">حسابك بانتظار موافقة الإدارة</h1>
+    <p id="approval-message">تم إنشاء الحساب بنجاح. ستتمكن من دخول مساحة العمل بعد اعتماد حسابك من مدير الشركة.</p>
+    <p id="approval-email"></p>
+    <div class="btn-row form-actions" style="justify-content:center">
+      <button class="btn btn-secondary" id="approval-check" type="button">التحقق من الحالة</button>
+      <button class="btn btn-danger" id="approval-sign-out" type="button">تسجيل الخروج</button>
+    </div>
+  </section>
+  <div class="app-shell" id="app-shell">
     <header class="topbar">
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">
@@ -797,6 +825,7 @@
         <p class="admin-note">إنشاء مستخدمي Firebase Auth وإدارة حقلي role وcompanyId يتم يدويًا من Firebase Console. لا تمنح الواجهة صلاحية ترقية الحسابات أو إنشاء مستخدمين؛ ستظهر هنا حسابات الوكلاء المهيأة داخل الشركة فقط.</p>
         <div class="admin-subtabs" role="tablist" aria-label="أقسام إدارة الشركة">
           <button class="btn btn-secondary admin-subtab active" type="button" data-admin-panel="team" aria-selected="true">👥 الفريق والتوزيع</button>
+          <button class="btn btn-secondary admin-subtab" type="button" data-admin-panel="users" aria-selected="false">✅ اعتماد المستخدمين</button>
           <button class="btn btn-secondary admin-subtab" type="button" data-admin-panel="modules" aria-selected="false">🧩 الوحدات والتكاملات</button>
         </div>
         <div class="admin-subpanel" id="admin-panel-team">
@@ -808,6 +837,15 @@
           <div class="form-grid"><div class="field"><label for="admin-batch-select">دفعة CRM</label><select class="control" id="admin-batch-select"></select></div><div class="field"><label for="admin-batch-agent">الوكيل</label><select class="control" id="admin-batch-agent"></select></div></div>
           <button class="btn btn-primary form-actions" type="button" id="admin-assign-batch">تعيين الدفعة</button>
         </div></div>
+        </div>
+        <div class="admin-subpanel" id="admin-panel-users" hidden>
+          <div class="panel-head"><div><h3>اعتماد المستخدمين وإدارة الأدوار</h3><p>تُحدّث قائمة المستخدمين لحظيًا. التغييرات تخص شركة MJK.</p></div><span class="role-badge" id="user-management-status">جارٍ تحميل الفريق</span></div>
+          <p class="admin-note">الحسابات المعلقة لا ترى العملاء أو إعدادات الشركة. رفض الحساب أو تعطيله يمنع الوصول للتطبيق، لكنه لا يحذف حساب Firebase Authentication.</p>
+          <div class="user-management-grid">
+            <section class="user-management-section"><h3>طلبات الموافقة</h3><div class="user-management-list" id="pending-user-list"></div><div class="table-empty" id="pending-user-empty"><strong>لا توجد طلبات معلقة</strong></div></section>
+            <section class="user-management-section"><h3>الفريق النشط</h3><div class="user-management-list" id="active-user-list"></div><div class="table-empty" id="active-user-empty"><strong>لا يوجد أعضاء نشطون</strong></div></section>
+            <section class="user-management-section"><h3>الحسابات المحظورة / المعطلة</h3><div class="user-management-list" id="blocked-user-list"></div><div class="table-empty" id="blocked-user-empty"><strong>لا توجد حسابات محظورة</strong></div></section>
+          </div>
         </div>
         <div class="admin-subpanel" id="admin-panel-modules" hidden>
           <div class="panel-head"><div><h3>الوحدات والتكاملات</h3><p>تُحفظ مفاتيح التشغيل على مستوى الشركة وتُطبّق فورًا على الجلسات المتصلة.</p></div><span class="role-badge" id="module-settings-status">جارٍ تحميل إعدادات الشركة</span></div>
@@ -900,7 +938,7 @@
     <div class="archive-item-head"><h2 id="cloud-sync-title">تسجيل الدخول والمزامنة السحابية</h2><button class="btn btn-quiet small-btn" id="close-cloud-dialog" type="button">إغلاق</button></div>
     <p class="helper">إعداد Firebase مضمّن مسبقًا. سجّل الدخول مباشرة للاتصال؛ تظل قاعدة البيانات المحلية فعالة دون اتصال وتتم المزامنة بعد عودة الإنترنت.</p>
     <div class="cloud-sync-note">
-      يلزم إنشاء حساب Authentication ووثيقة users/{uid} يدويًا في Firebase Console بالحقول email وcompanyId وrole (admin أو agent)، ثم إنشاء Firestore Database ونشر قواعد الملف <strong>firestore.rules</strong>.
+      يمكن للموظفين إنشاء حساب جديد من هنا؛ ستُسجّل الحسابات الجديدة بحالة انتظار في شركة MJK ولن تفتح CRM قبل موافقة المدير. أنشئ حساب المدير الأول ووثيقة users/{uid} يدويًا في Firebase Console مع companyId بالقيمة mjk_company وrole بالقيمة admin وstatus بالقيمة active، ثم انشر <strong>firestore.rules</strong>.
       <br>يفضّل تقديم الصفحة عبر HTTPS أو localhost لتفعيل Firestore offline persistence. تُخزّن المرفقات على هيئة مقاطع Firestore؛ تظل الحصة المجانية محدودة بحصص Google Cloud الحالية، ولا يوجد ضمان بأن كل استخدام سيبقى مجانيًا.
     </div>
     <details class="cloud-config-advanced">
@@ -912,10 +950,11 @@
     </details>
     <form id="cloud-login-form" style="margin-top:15px">
       <div class="form-grid">
+        <div class="field signup-full-name" id="signup-full-name-wrap" hidden><label for="cloud-full-name">الاسم بالكامل</label><input class="control" id="cloud-full-name" type="text" maxlength="100" autocomplete="name"></div>
         <div class="field"><label for="cloud-email">البريد الإلكتروني</label><input class="control" id="cloud-email" type="email" required autocomplete="username"></div>
         <div class="field"><label for="cloud-password">كلمة المرور</label><input class="control" id="cloud-password" type="password" required minlength="6" autocomplete="current-password"></div>
       </div>
-      <div class="btn-row form-actions"><button class="btn btn-primary" id="cloud-login" type="submit">تسجيل الدخول</button><button class="btn btn-secondary" id="cloud-register" type="button" hidden>إنشاء حساب</button><button class="btn btn-quiet" id="cloud-sync-now" type="button" hidden>مزامنة الآن</button><button class="btn btn-danger" id="cloud-sign-out" type="button" hidden>تسجيل الخروج</button></div>
+      <div class="btn-row form-actions"><button class="btn btn-primary" id="cloud-login" type="submit">تسجيل الدخول</button><button class="btn btn-secondary" id="cloud-register" type="button">إنشاء حساب موظف</button><button class="btn btn-quiet" id="cloud-sync-now" type="button" hidden>مزامنة الآن</button><button class="btn btn-danger" id="cloud-sign-out" type="button" hidden>تسجيل الخروج</button></div>
     </form>
     <p class="helper" id="cloud-account-status" role="status" aria-live="polite">بياناتك محفوظة محليًا على هذا الجهاز فقط حتى تهيئة Firebase وتسجيل الدخول.</p>
   </dialog>
@@ -934,6 +973,7 @@
       const CALCULATOR_STORAGE_KEY = "mjkCalculator.v1";
       const FIREBASE_CONFIG_KEY = "mjkCloud.firebaseConfig.v1";
       const CLOUD_SYNC_META_KEY = "mjkCloud.syncMetadata.v1";
+      const SIGNUP_COMPANY_ID = "mjk_company";
       const DEFAULT_FIREBASE_CONFIG = Object.freeze({
         apiKey: "AIzaSyB7f3lqbicC9M3aUC5HWd4ackTQc3fGJ64",
         authDomain: "mjk-sales.firebaseapp.com",
@@ -962,9 +1002,15 @@
       let companyLeadsListener = null;
       let teamProfilesListener = null;
       let companySettingsListener = null;
+      let userProfileListener = null;
+      let userManagementListener = null;
       let leadHistoryListener = null;
       let activeSession = { uid: "", email: "", role: "", companyId: "", ready: false };
       let teamProfiles = [];
+      let managedUsers = [];
+      let signupMode = false;
+      let signupInProgress = false;
+      let authSessionGeneration = 0;
       const defaultCompanySettings = {
         features: { whatsapp: true, metaLeadAds: false, voip: false, invoicing: false, emailAutomation: false, advancedAnalytics: false },
         whatsappTemplate: "مرحبًا {name}، معك فريق MJK بخصوص {project}.",
@@ -1186,9 +1232,94 @@
           (activeSession.role === "agent" && lead.companyId === activeSession.companyId &&
             [activeSession.uid, activeSession.email].filter(Boolean).includes(lead.assignedTo)));
       }
+      function showApprovalScreen(profile, message = "") {
+        const pending = profile?.status === "pending" || profile?.role === "pending";
+        byId("app-shell").hidden = true;
+        byId("approval-screen").classList.add("is-visible");
+        byId("approval-icon").textContent = pending ? "⏳" : "🔒";
+        byId("approval-title").textContent = pending ? "حسابك بانتظار موافقة الإدارة" : "الحساب غير مفعّل";
+        byId("approval-message").textContent = message || (pending
+          ? "تم إنشاء الحساب بنجاح. ستتمكن من دخول مساحة العمل بعد اعتماد حسابك من مدير الشركة."
+          : "لا يمكن لهذا الحساب دخول مساحة العمل. تواصل مع مدير الشركة للمساعدة.");
+        byId("approval-email").textContent = cloudUser?.email || "";
+      }
+      function hideApprovalScreen() {
+        byId("approval-screen").classList.remove("is-visible");
+        byId("app-shell").hidden = false;
+      }
+      function stopCompanySessionListeners() {
+        [cloudListener, companyLeadsListener, teamProfilesListener, companySettingsListener, userManagementListener]
+          .forEach(unsubscribe => { if (unsubscribe) unsubscribe(); });
+        cloudListener = null;
+        companyLeadsListener = null;
+        teamProfilesListener = null;
+        companySettingsListener = null;
+        userManagementListener = null;
+      }
+      function blockCompanySession(profile, message) {
+        stopCompanySessionListeners();
+        activeSession = { uid: cloudUser?.uid || "", email: cloudUser?.email || "", role: profile?.role || "", companyId: profile?.companyId || "", ready: false };
+        teamProfiles = [];
+        managedUsers = [];
+        companyActions = [];
+        leads = [];
+        companyLeadRecords.clear();
+        companySettings = normalizeCompanySettings();
+        refreshSessionUi();
+        showApprovalScreen(profile, message);
+      }
+      function renderManagedUsers() {
+        const pending = managedUsers.filter(profile => profile.status === "pending" || profile.role === "pending");
+        const active = managedUsers.filter(profile => (profile.status === "active" || !profile.status) && ["agent", "admin"].includes(profile.role));
+        const blocked = managedUsers.filter(profile => ["disabled", "rejected"].includes(profile.status));
+        const renderIdentity = profile => `<div class="managed-user-head"><div><div class="managed-user-name">${escapeHTML(profile.fullName || "بدون اسم")}</div>
+          <div class="managed-user-meta">${escapeHTML(profile.email || profile.uid || "")}</div></div>
+          <span class="role-badge">${escapeHTML(profile.status || "active")}</span></div>`;
+        byId("pending-user-list").innerHTML = pending.map(profile => `<article class="managed-user" data-managed-user="${escapeHTML(profile.uid)}">
+          ${renderIdentity(profile)}<div class="managed-user-actions"><label class="sr-only" for="approve-role-${escapeHTML(profile.uid)}">الدور عند الموافقة</label>
+          <select class="control" id="approve-role-${escapeHTML(profile.uid)}" data-user-role><option value="agent">وكيل</option><option value="admin">مدير</option></select>
+          <button class="btn btn-primary small-btn" type="button" data-user-action="approve">موافقة وتفعيل</button>
+          <button class="btn btn-danger small-btn" type="button" data-user-action="reject">رفض / حظر</button></div></article>`).join("");
+        byId("active-user-list").innerHTML = active.map(profile => `<article class="managed-user" data-managed-user="${escapeHTML(profile.uid)}">
+          ${renderIdentity(profile)}<div class="managed-user-actions"><label class="sr-only" for="active-role-${escapeHTML(profile.uid)}">تغيير دور المستخدم</label>
+          <select class="control" id="active-role-${escapeHTML(profile.uid)}" data-user-role ${profile.uid === activeSession.uid ? "disabled" : ""}>
+            <option value="agent" ${profile.role === "agent" ? "selected" : ""}>وكيل</option>
+            <option value="admin" ${profile.role === "admin" ? "selected" : ""}>مدير</option>
+          </select><button class="btn btn-secondary small-btn" type="button" data-user-action="set-role" ${profile.uid === activeSession.uid ? "disabled" : ""}>تحديث الدور</button>
+          ${profile.uid !== activeSession.uid ? '<button class="btn btn-danger small-btn" type="button" data-user-action="disable">تعطيل الحساب</button>' : '<span class="module-state">لا يمكن تعطيل حسابك الحالي</span>'}</div></article>`).join("");
+        byId("blocked-user-list").innerHTML = blocked.map(profile => `<article class="managed-user" data-managed-user="${escapeHTML(profile.uid)}">
+          ${renderIdentity(profile)}<div class="managed-user-actions"><label class="sr-only" for="reactivate-role-${escapeHTML(profile.uid)}">الدور عند إعادة التفعيل</label>
+          <select class="control" id="reactivate-role-${escapeHTML(profile.uid)}" data-user-role><option value="agent">وكيل</option><option value="admin">مدير</option></select>
+          <button class="btn btn-secondary small-btn" type="button" data-user-action="reactivate">إعادة التفعيل</button></div></article>`).join("");
+        byId("pending-user-empty").hidden = pending.length > 0;
+        byId("active-user-empty").hidden = active.length > 0;
+        byId("blocked-user-empty").hidden = blocked.length > 0;
+      }
+      async function updateManagedUser(uid, patch, actionName) {
+        if (activeSession.role !== "admin" || activeSession.companyId !== SIGNUP_COMPANY_ID || !uid || uid === activeSession.uid) {
+          showToast("إدارة المستخدمين متاحة لمدير شركة MJK، ولا يمكن تغيير حساب المدير الحالي.");
+          return;
+        }
+        const profile = managedUsers.find(user => user.uid === uid);
+        if (!profile || profile.companyId !== activeSession.companyId) {
+          showToast("لم يُعثر على مستخدم صالح ضمن شركتك.");
+          return;
+        }
+        const card = document.querySelector(`[data-managed-user="${CSS.escape(uid)}"]`);
+        if (card) card.querySelectorAll("button,select").forEach(control => { control.disabled = true; });
+        try {
+          await cloudDb.collection("users").doc(uid).update({ ...patch, updatedAt: window.firebase.firestore.FieldValue.serverTimestamp() });
+          showToast(actionName);
+        } catch (error) {
+          console.error("Could not update company user approval or role:", error);
+          showToast(`تعذر تحديث المستخدم: ${error.message || error.code}.`);
+          if (card) card.querySelectorAll("button,select").forEach(control => { control.disabled = false; });
+        }
+      }
       function refreshSessionUi() {
         const admin = activeSession.ready && activeSession.role === "admin";
         byId("tab-admin").hidden = !admin;
+        document.querySelector('[data-admin-panel="users"]').hidden = !admin || activeSession.companyId !== SIGNUP_COMPANY_ID;
         if (!admin && document.querySelector('.tab-button[data-tab="admin"]').classList.contains("active")) switchTab("crm");
         byId("session-role-label").textContent = activeSession.ready
           ? `${activeSession.role === "admin" ? "مدير الشركة" : "وكيل"} · ${activeSession.companyId}`
@@ -1198,6 +1329,7 @@
           control.disabled = Boolean(cloudUser && !activeSession.ready);
         });
         if (admin) renderAdminDashboard();
+        if (admin && activeSession.companyId === SIGNUP_COMPANY_ID) renderManagedUsers();
         renderLeads();
         renderPipeline();
       }
@@ -1459,13 +1591,91 @@
           .where("companyId", "==", activeSession.companyId)
           .onSnapshot(snapshot => {
             teamProfiles = snapshot.docs.map(document => ({ uid: document.id, ...document.data() }))
-              .filter(profile => profile.role === "agent");
+              .filter(profile => profile.role === "agent" && (profile.status === "active" || !profile.status));
             renderAdminDashboard();
             renderLeads();
           }, error => {
             console.error("Could not load company agent profiles:", error);
             showToast(`تعذر تحميل فريق الشركة: ${error.message || error.code}.`);
           });
+      }
+      function attachUserManagementListener() {
+        if (userManagementListener) userManagementListener();
+        userManagementListener = null;
+        managedUsers = [];
+        if (!activeSession.ready || activeSession.role !== "admin" || activeSession.companyId !== SIGNUP_COMPANY_ID) {
+          byId("user-management-status").textContent = "يتطلب مدير شركة MJK";
+          renderManagedUsers();
+          return;
+        }
+        byId("user-management-status").textContent = "جارٍ تحميل أعضاء الشركة";
+        userManagementListener = cloudDb.collection("users")
+          .where("companyId", "==", SIGNUP_COMPANY_ID)
+          .onSnapshot(snapshot => {
+            managedUsers = snapshot.docs.map(document => ({ uid: document.id, ...document.data() }));
+            byId("user-management-status").textContent = `تحديث مباشر · ${managedUsers.length} مستخدم`;
+            renderManagedUsers();
+          }, error => {
+            console.error("Company user management listener failed:", error);
+            byId("user-management-status").textContent = "تعذر تحميل أعضاء الشركة";
+            showToast(`تعذر تحميل طلبات المستخدمين: ${error.message || error.code}.`);
+          });
+      }
+      function handleUserProfileSnapshot(user, snapshot, generation) {
+        if (generation !== authSessionGeneration || cloudUser?.uid !== user.uid) return;
+        if (snapshot.metadata?.fromCache) {
+          showApprovalScreen({ role: "pending", status: "pending" },
+            "جارٍ التحقق من حالة الحساب مع خادم الشركة. لا يمكن فتح مساحة العمل قبل تأكيد الصلاحية.");
+          return;
+        }
+        if (!snapshot.exists) {
+          blockCompanySession({ role: "pending", status: "pending" },
+            "لم يكتمل ملف حسابك بعد. إذا كنت قد أنشأت الحساب للتو، انتظر لحظات ثم تحقق مجددًا.");
+          return;
+        }
+        const profile = snapshot.data();
+        const status = profile.status || (["admin", "agent"].includes(profile.role) ? "active" : "pending");
+        profile.status = status;
+        if (status === "pending" || profile.role === "pending") {
+          blockCompanySession(profile);
+          return;
+        }
+        if (status !== "active" || !["admin", "agent"].includes(profile.role)) {
+          blockCompanySession(profile, status === "rejected"
+            ? "تم رفض طلب الحساب. تواصل مع مدير الشركة إذا كنت تعتقد أن ذلك حدث بالخطأ."
+            : "هذا الحساب معطّل حاليًا. تواصل مع مدير الشركة لإعادة تفعيله.");
+          return;
+        }
+        if (typeof profile.companyId !== "string" || !profile.companyId.trim()) {
+          blockCompanySession(profile, "ملف الشركة غير مكتمل. تواصل مع مدير النظام.");
+          return;
+        }
+        if (!activeSession.ready || activeSession.uid !== user.uid ||
+            activeSession.role !== profile.role || activeSession.companyId !== profile.companyId) {
+          if (!switchLocalUser(user.uid, profile.role, profile.companyId)) {
+            blockCompanySession(profile, "تعذر إعداد مساحة عمل هذا الحساب على الجهاز.");
+            return;
+          }
+        }
+        hideApprovalScreen();
+        attachCompanyLeadsListener();
+        attachTeamProfilesListener();
+        attachUserManagementListener();
+        attachCompanySettingsListener();
+        attachCloudListener();
+        refreshSessionUi();
+      }
+      function attachUserProfileListener(user) {
+        if (userProfileListener) userProfileListener();
+        const generation = ++authSessionGeneration;
+        userProfileListener = cloudDb.collection("users").doc(user.uid).onSnapshot(
+          snapshot => handleUserProfileSnapshot(user, snapshot, generation),
+          error => {
+            console.error("Firebase user profile listener failed:", error);
+            blockCompanySession({ role: "pending", status: "pending" },
+              `تعذر تحميل حالة الموافقة: ${error.message || error.code}. تحقق من الاتصال ثم أعد المحاولة.`);
+          }
+        );
       }
       function attachCompanySettingsListener() {
           if (companySettingsListener) companySettingsListener();
@@ -1963,8 +2173,15 @@
       }
       function updateCloudAccountUi() {
         const signedIn = Boolean(cloudUser);
+        if (!signedIn) {
+          byId("cloud-login").textContent = signupMode ? "إنشاء حساب بانتظار الموافقة" : "تسجيل الدخول";
+          byId("cloud-register").textContent = signupMode ? "العودة لتسجيل الدخول" : "إنشاء حساب موظف";
+          byId("cloud-password").autocomplete = signupMode ? "new-password" : "current-password";
+        }
         byId("cloud-login").hidden = signedIn;
-        byId("cloud-register").hidden = true;
+        byId("cloud-register").hidden = signedIn;
+        byId("signup-full-name-wrap").hidden = signedIn || !signupMode;
+        byId("cloud-full-name").required = !signedIn && signupMode;
         byId("cloud-sync-now").hidden = !signedIn;
         byId("cloud-sync-now").disabled = signedIn && (cloudAccountMismatch || !cloudInitialServerSnapshot);
         byId("cloud-sign-out").hidden = !signedIn;
@@ -2019,28 +2236,25 @@
             cloudAuth.onAuthStateChanged(async user => {
               const previousUser = cloudUser;
               if (previousUser && previousUser.uid !== user?.uid) {
-                if (cloudListener) cloudListener();
-                if (companyLeadsListener) companyLeadsListener();
-                if (teamProfilesListener) teamProfilesListener();
-                if (companySettingsListener) companySettingsListener();
-                cloudListener = null;
-                companyLeadsListener = null;
-                teamProfilesListener = null;
-                companySettingsListener = null;
+                stopCompanySessionListeners();
+                if (userProfileListener) userProfileListener();
+                userProfileListener = null;
+                authSessionGeneration++;
                 activeSession = { uid: "", email: "", role: "", companyId: "", ready: false };
               }
               cloudUser = user;
+              if (!user) signupMode = false;
               cloudAccountMismatch = false;
               updateCloudAccountUi();
+              if (user && signupInProgress) {
+                resolve(true);
+                return;
+              }
               if (!user) {
-                if (cloudListener) cloudListener();
-                cloudListener = null;
-                if (companyLeadsListener) companyLeadsListener();
-                companyLeadsListener = null;
-                if (teamProfilesListener) teamProfilesListener();
-                teamProfilesListener = null;
-                if (companySettingsListener) companySettingsListener();
-                companySettingsListener = null;
+                stopCompanySessionListeners();
+                if (userProfileListener) userProfileListener();
+                userProfileListener = null;
+                authSessionGeneration++;
                 activeSession = { uid: "", email: "", role: "", companyId: "", ready: false };
                 cloudRemoteRecords.clear();
                 cloudInitialServerSnapshot = false;
@@ -2048,6 +2262,7 @@
                 teamProfiles = [];
                 companySettings = normalizeCompanySettings();
                 metaPreviewLead = null;
+                hideApprovalScreen();
                 if (previousUser) {
                   leads = [];
                   companyActions = [];
@@ -2068,33 +2283,9 @@
                 resolve(false);
                 return;
               }
-              let profile;
-              try {
-                const profileSnapshot = await cloudDb.collection("users").doc(user.uid).get();
-                if (!profileSnapshot.exists) throw new Error("لم يُعثر على ملف المستخدم. أنشئ المستند users/{uid} من Firebase Console مع الحقول role وcompanyId وemail.");
-                profile = profileSnapshot.data();
-                if (!["admin", "agent"].includes(profile.role) || typeof profile.companyId !== "string" || !profile.companyId.trim()) {
-                  throw new Error("يجب أن يحتوي ملف users/{uid} على role من admin أو agent وعلى companyId صالح.");
-                }
-              } catch (error) {
-                activeSession = { uid: user.uid, email: user.email || "", role: "", companyId: "", ready: false };
-                updateCloudAccountUi();
-                refreshSessionUi();
-                byId("cloud-account-status").textContent = `تعذر تحميل صلاحيات الشركة: ${error.message || error.code}.`;
-                setCloudStatus("ملف الشركة غير مكتمل", "error");
-                resolve(true);
-                return;
-              }
-              if (!switchLocalUser(user.uid, profile.role, profile.companyId)) {
-                resolve(true);
-                return;
-              }
-              if (cloudListener) cloudListener();
-              if (teamProfilesListener) teamProfilesListener();
-              attachCompanyLeadsListener();
-              attachTeamProfilesListener();
-              attachCompanySettingsListener();
-              attachCloudListener();
+              blockCompanySession({ role: "pending", status: "pending" },
+                "جارٍ التحقق من موافقة الحساب قبل فتح مساحة العمل.");
+              attachUserProfileListener(user);
               resolve(true);
             }, error => {
               console.error("Firebase authentication state listener failed:", error);
@@ -2190,6 +2381,60 @@
       });
       byId("cloud-login-form").addEventListener("submit", async event => {
         event.preventDefault();
+        if (signupMode) {
+          const fullName = byId("cloud-full-name").value.trim();
+          if (fullName.length < 2) {
+            byId("cloud-full-name").setCustomValidity("أدخل الاسم الكامل.");
+            byId("cloud-full-name").reportValidity();
+            return;
+          }
+          byId("cloud-full-name").setCustomValidity("");
+          let createdUser = null;
+          signupInProgress = true;
+          blockCompanySession({ role: "pending", status: "pending" },
+            "جارٍ إنشاء الحساب المعلّق. ستظل مساحة العملاء مغلقة حتى التحقق من موافقة المدير.");
+          try {
+            if (!await initializeCloudSync() || !cloudAuth) throw new Error("تعذر تهيئة Firebase.");
+            await cloudAuth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
+            const credential = await cloudAuth.createUserWithEmailAndPassword(
+              byId("cloud-email").value.trim(), byId("cloud-password").value
+            );
+            createdUser = credential.user;
+            cloudUser = createdUser;
+            const profile = {
+              uid: createdUser.uid,
+              email: createdUser.email || byId("cloud-email").value.trim(),
+              fullName,
+              companyId: SIGNUP_COMPANY_ID,
+              role: "pending",
+              status: "pending",
+              createdAt: window.firebase.firestore.FieldValue.serverTimestamp()
+            };
+            await cloudDb.collection("users").doc(createdUser.uid).set(profile);
+            signupInProgress = false;
+            signupMode = false;
+            byId("cloud-password").value = "";
+            updateCloudAccountUi();
+            attachUserProfileListener(createdUser);
+            byId("cloud-account-status").textContent = "تم إنشاء الحساب. الوصول إلى CRM متوقف حتى موافقة مدير الشركة.";
+          } catch (error) {
+            signupInProgress = false;
+            signupMode = false;
+            console.error("Firebase employee registration failed:", error);
+            if (createdUser) {
+              updateCloudAccountUi();
+              blockCompanySession({ role: "pending", status: "pending" },
+                "تم إنشاء حساب Authentication لكن تعذر حفظ ملف الموافقة. تحقق من نشر firestore.rules، ثم اطلب من مدير الشركة إكمال ملف users/{uid} في Firestore Console.");
+            } else {
+              updateCloudAccountUi();
+              hideApprovalScreen();
+              refreshSessionUi();
+            }
+            byId("cloud-account-status").textContent = `تعذر إنشاء الحساب أو ملف الموافقة: ${error.message || error.code}. تأكد من تفعيل Email/Password ونشر قواعد Firestore المحدّثة.`;
+            setCloudStatus("تعذر إنشاء الحساب", "error");
+          }
+          return;
+        }
         try {
           if (!await initializeCloudSync() || !cloudAuth) throw new Error("احفظ إعدادات Firebase أولًا.");
           await cloudAuth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
@@ -2202,6 +2447,15 @@
           setCloudStatus("فشل تسجيل الدخول", "error");
         }
       });
+      byId("cloud-register").addEventListener("click", () => {
+        signupMode = !signupMode;
+        byId("cloud-login").textContent = signupMode ? "إنشاء حساب بانتظار الموافقة" : "تسجيل الدخول";
+        byId("cloud-register").textContent = signupMode ? "العودة لتسجيل الدخول" : "إنشاء حساب موظف";
+        byId("cloud-password").autocomplete = signupMode ? "new-password" : "current-password";
+        byId("signup-full-name-wrap").hidden = !signupMode;
+        byId("cloud-full-name").required = signupMode;
+        if (!signupMode) byId("cloud-full-name").value = "";
+      });
       byId("cloud-sign-out").addEventListener("click", async () => {
         try {
           if (cloudAuth) await cloudAuth.signOut();
@@ -2212,6 +2466,17 @@
           byId("cloud-account-status").textContent = `تعذر تسجيل الخروج: ${error.message || error.code}.`;
           setCloudStatus("تعذر تسجيل الخروج", "error");
         }
+      });
+      byId("approval-sign-out").addEventListener("click", async () => {
+        try {
+          if (cloudAuth) await cloudAuth.signOut();
+        } catch (error) {
+          console.error("Could not sign out a pending or disabled user:", error);
+          showToast(`تعذر تسجيل الخروج: ${error.message || error.code}.`);
+        }
+      });
+      byId("approval-check").addEventListener("click", () => {
+        if (cloudUser && cloudDb) attachUserProfileListener(cloudUser);
       });
       byId("cloud-sync-now").addEventListener("click", () => {
         if (!cloudUser) { showToast("سجّل الدخول أولًا لمزامنة البيانات."); return; }
@@ -2258,6 +2523,7 @@
       byId("today-label").textContent = arabicDate();
 
       function switchTab(tabName) {
+        if (cloudUser && !activeSession.ready) return;
         if (tabName === "admin" && (!activeSession.ready || activeSession.role !== "admin")) tabName = "crm";
         document.querySelectorAll(".tab-button").forEach(button => {
           const selected = button.dataset.tab === tabName;
@@ -2627,7 +2893,46 @@
           panel.hidden = panel.id !== `admin-panel-${selected}`;
         });
         if (selected === "modules") renderCompanyModules();
+        if (selected === "users") attachUserManagementListener();
       }));
+      byId("pending-user-list").addEventListener("click", event => {
+        const button = event.target.closest("[data-user-action]");
+        if (!button) return;
+        const userCard = button.closest("[data-managed-user]");
+        const uid = userCard?.dataset.managedUser;
+        if (!uid) return;
+        if (button.dataset.userAction === "approve") {
+          const role = userCard.querySelector("[data-user-role]")?.value;
+          if (!["agent", "admin"].includes(role)) { showToast("اختر دورًا صالحًا للمستخدم."); return; }
+          void updateManagedUser(uid, { role, status: "active" }, "تم اعتماد المستخدم وتفعيل الحساب.");
+        } else if (button.dataset.userAction === "reject") {
+          void updateManagedUser(uid, { status: "rejected" }, "تم رفض طلب المستخدم وحظر الوصول.");
+        }
+      });
+      byId("active-user-list").addEventListener("click", event => {
+        const button = event.target.closest("[data-user-action]");
+        if (!button) return;
+        const userCard = button.closest("[data-managed-user]");
+        const uid = userCard?.dataset.managedUser;
+        if (!uid) return;
+        if (button.dataset.userAction === "set-role") {
+          const role = userCard.querySelector("[data-user-role]")?.value;
+          if (!["agent", "admin"].includes(role)) { showToast("اختر دورًا صالحًا للمستخدم."); return; }
+          void updateManagedUser(uid, { role, status: "active" }, "تم تحديث دور المستخدم.");
+        } else if (button.dataset.userAction === "disable") {
+          if (!window.confirm("سيُمنع هذا المستخدم من دخول CRM مع الاحتفاظ بحسابه وبياناته. هل تريد المتابعة؟")) return;
+          void updateManagedUser(uid, { status: "disabled" }, "تم تعطيل حساب المستخدم.");
+        }
+      });
+      byId("blocked-user-list").addEventListener("click", event => {
+        const button = event.target.closest('[data-user-action="reactivate"]');
+        if (!button) return;
+        const userCard = button.closest("[data-managed-user]");
+        const uid = userCard?.dataset.managedUser;
+        const role = userCard?.querySelector("[data-user-role]")?.value;
+        if (!uid || !["agent", "admin"].includes(role)) { showToast("اختر دورًا صالحًا لإعادة التفعيل."); return; }
+        void updateManagedUser(uid, { role, status: "active" }, "تمت إعادة تفعيل المستخدم.");
+      });
       byId("company-module-list").addEventListener("change", async event => {
         const toggle = event.target.closest("[data-company-feature]");
         if (!toggle || activeSession.role !== "admin") return;
