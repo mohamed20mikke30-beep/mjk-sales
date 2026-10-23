@@ -1,0 +1,35 @@
+Locally hosted document and OCR libraries
+
+The application loads these pinned browser bundles locally. Uploaded documents
+are processed by the browser and are not sent to the library download sources.
+
+- Firebase JavaScript SDK 13.0.0
+  Files: firebase-app-compat.js, firebase-auth-compat.js,
+  firebase-firestore-compat.js
+  License: Apache License 2.0; see FIREBASE-LICENSE.
+  Source: https://github.com/firebase/firebase-js-sdk
+
+- Mammoth.js 1.9.0
+  Files: mammoth.browser.min.js
+  License: BSD 2-Clause; see MAMMOTH-LICENSE.
+  Source: https://github.com/mwilliamson/mammoth.js
+
+- PDF.js 3.11.174
+  Files: pdf.min.js, pdf.worker.min.js
+  License: Apache License 2.0; see PDFJS-LICENSE.
+  Source: https://github.com/mozilla/pdf.js
+
+- Tesseract.js 5.1.1
+  Files: tesseract.min.js, worker.min.js
+  License: Apache License 2.0; see TESSERACT-LICENSE.
+  Source: https://github.com/naptha/tesseract.js
+
+- Tesseract.js-core 5.1.1
+  Files: tesseract-core-simd-lstm.wasm.js, tesseract-core-simd-lstm.wasm
+  License: Apache License 2.0; see TESSERACT-CORE-LICENSE.
+  Source: https://github.com/naptha/tesseract.js
+
+- tessdata_fast (Arabic and English trained data)
+  Files: tessdata/ara.traineddata, tessdata/eng.traineddata
+  License: Apache License 2.0; see TESSDATA-LICENSE.
+  Source: https://github.com/tesseract-ocr/tessdata_fast
