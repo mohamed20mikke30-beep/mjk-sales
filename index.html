@@ -1718,37 +1718,28 @@
           return;
         }
         if (!snapshot.exists) {
-          if (isPrimaryAdmin) {
-            try {
-              await cloudFunctions.httpsCallable("bootstrapPrimaryAdmin")({});
-              return;
-            } catch (error) {
-              console.error("Could not restore the primary administrator profile:", error);
-              hideApprovalScreen();
-              refreshSessionUi();
-              byId("cloud-account-status").textContent = `تعذر استعادة ملف المدير: ${error.message || error.code}. أعد المحاولة بعد التحقق من الاتصال.`;
-              return;
-            }
-          }
-          blockCompanySession({ role: "pending", status: "pending" },
-            "لم يكتمل ملف حسابك بعد. إذا كنت قد أنشأت الحساب للتو، انتظر لحظات ثم تحقق مجددًا.");
-          return;
+         if (isPrimaryAdmin) {
+         hideApprovalScreen();
+         refreshSessionUi();
+         return;
+         }
+         blockCompanySession({ role: "pending", status: "pending" }, "لم يكتمل ملف حسابك بعد. إذا كنت قد أنشأت الحساب للتو، انتظر لحظات ثم تحقق مجدداً");
+         return;
+         }
         }
         const profile = snapshot.data();
         const status = profile.status || (["admin", "agent"].includes(profile.role) ? "active" : "pending");
         profile.status = status;
+        { /*
         if (isPrimaryAdmin && (profile.role !== "admin" || !["approved", "active"].includes(status))) {
           try {
-            await cloudFunctions.httpsCallable("bootstrapPrimaryAdmin")({});
-            return;
-          } catch (error) {
-            console.error("Could not restore primary administrator approval:", error);
-            hideApprovalScreen();
-            refreshSessionUi();
-            byId("cloud-account-status").textContent = `تعذر تثبيت صلاحية المدير: ${error.message || error.code}.`;
-            return;
-          }
-        }
+         await cloudFunctions.httpsCallable("bootstrapPrimaryAdmin")({});
+         return;
+         } catch (error) {
+         console.error("Could not update primary administrator profile:", error);
+         }
+        
+         */
         if (status === "pending" || profile.role === "pending") {
           blockCompanySession(profile);
           return;
@@ -1779,7 +1770,7 @@
         attachCloudListener();
         refreshSessionUi();
       }
-      function attachUserProfileListener(user) {
+       function attachUserProfileListener(user) {
         if (userProfileListener) userProfileListener();
         const generation = ++authSessionGeneration;
         userProfileListener = cloudDb.collection("users").doc(user.uid).onSnapshot(
