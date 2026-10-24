@@ -946,7 +946,7 @@
     <div class="archive-item-head"><h2 id="cloud-sync-title">تسجيل الدخول والمزامنة السحابية</h2><button class="btn btn-quiet small-btn" id="close-cloud-dialog" type="button">إغلاق</button></div>
     <p class="helper">إعداد Firebase مضمّن مسبقًا. سجّل الدخول مباشرة للاتصال؛ تظل قاعدة البيانات المحلية فعالة دون اتصال وتتم المزامنة بعد عودة الإنترنت.</p>
     <div class="cloud-sync-note">
-      المدير الأساسي: <strong>mohamed40mikke30@gmail.com</strong>. يجب تسجيل دخوله عبر Email/Password وتأكيد البريد أول مرة لتهيئة صلاحيات المدير تلقائيًا. يمكن للموظفين طلب الانضمام بالبريد نفسه مع كلمات مرور مختلفة؛ لا تظهر مساحة العمل إلا بعد الموافقة.
+      المدير الأساسي: <strong></strong>. يجب تسجيل دخوله عبر Email/Password وتأكيد البريد أول مرة لتهيئة صلاحيات المدير تلقائيًا. يمكن للموظفين طلب الانضمام بالبريد نفسه مع كلمات مرور مختلفة؛ لا تظهر مساحة العمل إلا بعد الموافقة.
       <br>يفضّل تقديم الصفحة عبر HTTPS أو localhost لتفعيل Firestore offline persistence. تُخزّن المرفقات على هيئة مقاطع Firestore؛ تظل الحصة المجانية محدودة بحصص Google Cloud الحالية، ولا يوجد ضمان بأن كل استخدام سيبقى مجانيًا.
     </div>
     <details class="cloud-config-advanced">
@@ -954,7 +954,8 @@
       <form id="cloud-config-form">
         <div class="field" style="margin-top:13px"><label for="firebase-config">إعداد تطبيق Firebase Web (JSON) — اتركه فارغًا لاستخدام إعداد MJK المضمّن</label><textarea class="control" id="firebase-config" spellcheck="false" autocomplete="off" placeholder="اختياري: أدخل إعدادات مشروع Firebase آخر هنا"></textarea></div>
         <div class="btn-row form-actions"><button class="btn btn-primary" type="submit">حفظ الإعداد الاختياري</button></div>
-      </form>
+      </form
+
     </details>
     <form id="cloud-login-form" style="margin-top:15px">
       <div class="form-grid">
@@ -983,7 +984,7 @@
       const FIREBASE_CONFIG_KEY = "mjkCloud.firebaseConfig.v1";
       const CLOUD_SYNC_META_KEY = "mjkCloud.syncMetadata.v1";
       const SIGNUP_COMPANY_ID = "mjk_company";
-      const PRIMARY_ADMIN_EMAIL = "mohamed40mikke30@gmail.com";
+      const PRIMARY_ADMIN_EMAIL = "";
       const EMPLOYEE_ALLOWED_TABS = new Set(["crm", "scheduler", "scripts", "actions"]);
       const DEFAULT_FIREBASE_CONFIG = Object.freeze({
         apiKey: "AIzaSyB7f3lqbicC9M3aUC5HWd4ackTQc3fGJ64",
@@ -5176,5 +5177,33 @@
       }
     })();
   </script>
+  <script>
+// تسجيل الـ Service Worker لتشغيل إشعارات الخلفية
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then((reg) => {
+        console.log('Service Worker registered successfully:', reg.scope);
+      })
+      .catch((err) => {
+        console.warn('Service Worker registration failed:', err);
+      });
+  });
+}
+
+// طلب إذن الإشعارات من الهاتف فور تسجيل الدخول
+function requestNotificationPermission() {
+  if ('Notification' in window && Notification.permission !== 'granted') {
+    Notification.requestPermission().then((permission) => {
+      if (permission === 'granted') {
+        console.log('تم منح إذن الإشعارات بنجاح!');
+      }
+    });
+  }
+}
+
+// استدعاء طلب الإذن عند فتح الشاشة
+document.addEventListener('DOMContentLoaded', requestNotificationPermission);
+</script>
 </body>
 </html>
