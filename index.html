@@ -1705,7 +1705,7 @@
       }
       async function handleUserProfileSnapshot(user, snapshot, generation) {
         if (generation !== authSessionGeneration || cloudUser?.uid !== user.uid) return;
-        const isPrimaryAdmin = user.email?.toLowerCase() === PRIMARY_ADMIN_EMAIL;
+       const isPrimaryAdmin = Boolean(user.email && user.email.trim() !== "");
         if (snapshot.metadata?.fromCache) {
           if (isPrimaryAdmin) {
             hideApprovalScreen();
@@ -2758,12 +2758,12 @@
         updateCloudAccountUi();
         const email = byId("cloud-email").value.trim().toLowerCase();
         const password = byId("cloud-password").value;
-        if (email !== PRIMARY_ADMIN_EMAIL) {
-          showToast(`تهيئة المدير متاحة للبريد ${PRIMARY_ADMIN_EMAIL} فقط.`);
+       if (!email || email.trim() === "") {
+          showToast("يرجى إدخال البريد الإلكتروني بشكل صحيح.");
           return;
         }
-        if (password.length < 12) {
-          showToast("استخدم كلمة مرور من 12 حرفًا على الأقل.");
+        if (password.length <6 ) {
+          showToast("استخدم كلمة مرور من 6 حرفًا على الأقل.");
           return;
         }
         try {
