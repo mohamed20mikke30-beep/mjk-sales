@@ -1268,13 +1268,14 @@
         byId("app-shell").hidden = false;
       }
       function stopCompanySessionListeners() {
-        [cloudListener, companyLeadsListener, teamProfilesListener, companySettingsListener, userManagementListener]
+        [cloudListener, companyLeadsListener, teamProfilesListener, companySettingsListener, userManagementListener, leadHistoryListener]
           .forEach(unsubscribe => { if (unsubscribe) unsubscribe(); });
         cloudListener = null;
         companyLeadsListener = null;
         teamProfilesListener = null;
         companySettingsListener = null;
         userManagementListener = null;
+        leadHistoryListener = null;
       }
       function blockCompanySession(profile, message) {
         stopCompanySessionListeners();
@@ -1589,6 +1590,7 @@
             : [...new Set([activeSession.uid, activeSession.email].filter(Boolean))];
           query = query.where("assignedTo", "in", assignees);
         }
+        query = query.limit(100);
         companyLeadsListener = query.onSnapshot({ includeMetadataChanges: true }, snapshot => {
           if (snapshot.metadata?.fromCache && navigator.onLine && !companyInitialServerSnapshot) return;
           if (!snapshot.metadata?.fromCache) companyInitialServerSnapshot = true;
@@ -1652,11 +1654,13 @@
         }
       }
       function attachTeamProfilesListener() {
+        if (!cloudDb) return;
         if (teamProfilesListener) teamProfilesListener();
         teamProfiles = [];
         if (!activeSession.ready || activeSession.role !== "admin") { refreshSessionUi(); return; }
         teamProfilesListener = cloudDb.collection("users")
           .where("companyId", "==", activeSession.companyId)
+          .limit(100)
           .onSnapshot(snapshot => {
             teamProfiles = snapshot.docs.map(document => ({ uid: document.id, ...document.data() }))
               .filter(profile => profile.role === "agent" && ["active", "approved", undefined].includes(profile.status));
@@ -1668,11 +1672,12 @@
           });
       }
       function attachUserManagementListener() {
+        if (!cloudDb) return;
         if (userManagementListener) userManagementListener();
         userManagementListener = null;
         managedUsers = [];
         initialManagedUsersSnapshot = true;
-        if (!activeSession.ready || activeSession.role !== "admin" || activeSession.companyId !== SIGNUP_COMPANY_ID) {
+        if (!activeSession.ready || !cloudDb || activeSession.role !== "admin" || activeSession.companyId !== SIGNUP_COMPANY_ID) {
           byId("user-management-status").textContent = "يتطلب مدير شركة MJK";
           renderManagedUsers();
           return;
@@ -1680,6 +1685,7 @@
         byId("user-management-status").textContent = "جارٍ تحميل أعضاء الشركة";
         userManagementListener = cloudDb.collection("users")
           .where("companyId", "==", SIGNUP_COMPANY_ID)
+          .limit(100)
           .onSnapshot(snapshot => {
             const previousPending = new Set(managedUsers
               .filter(profile => profile.status === "pending" || profile.role === "pending")
@@ -1770,6 +1776,7 @@
         refreshSessionUi();
       }
        function attachUserProfileListener(user) {
+        if (!user || !cloudDb) return;
         if (userProfileListener) userProfileListener();
         const generation = ++authSessionGeneration;
         userProfileListener = cloudDb.collection("users").doc(user.uid).onSnapshot(
@@ -2456,22 +2463,34 @@
         }
         cloudApp = existingApp || window.firebase.initializeApp(config);
         cloudAuth = cloudApp.auth();
-        cloudDb = cloudApp.firestore();
-        // Configure Firestore offline persistence/cache before any other Firestore
-        // method or service is created, so settings are not already frozen.
-        if (!(cloudDb?._delegate?._settingsFrozen)) {
+        cloudDb = null;
+        try {
+          const firestoreModule = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+          if (typeof firestoreModule.initializeFirestore !== "function" ||
+              typeof firestoreModule.persistentLocalCache !== "function") {
+            throw new Error("Modern Firestore cache APIs are unavailable.");
+          }
           try {
-            await cloudDb.enablePersistence({ synchronizeTabs: true });
-          } catch (error) {
-            if (["failed-precondition", "unimplemented"].includes(error.code)) {
-              console.warn("Firestore offline cache is unavailable in this browser context; localStorage remains the offline source of truth.", error);
-              byId("cloud-account-status").textContent = "حُفظ الإعداد. سيبقى التخزين المحلي فعالًا؛ لم يسمح المتصفح بتمكين cache غير المتصلة في هذا السياق.";
-            } else {
-              console.error("Could not enable Firestore offline persistence:", error);
-              byId("cloud-account-status").textContent = `تعذر تهيئة التخزين المؤقت في Firestore: ${error.message || error.code}.`;
+            firestoreModule.initializeFirestore(cloudApp, {
+              cache: firestoreModule.persistentLocalCache({
+                tabManager: typeof firestoreModule.persistentMultipleTabManager === "function"
+                  ? firestoreModule.persistentMultipleTabManager()
+                  : undefined
+              })
+            });
+          } catch (cacheError) {
+            // initializeFirestore throws when Firestore has already been started
+            // for this app; treat that as non-fatal and continue.
+            if (!/already (been )?started|already exists/i.test(String(cacheError?.message || cacheError?.code || ""))) {
+              throw cacheError;
             }
           }
+        } catch (moduleError) {
+          console.error("Could not initialize modern Firestore persistent cache:", moduleError);
+          throw moduleError;
         }
+        cloudDb = cloudApp.firestore();
+
         cloudFunctions = cloudApp.functions("us-central1");
         if (!cloudInitPromise) {
           cloudInitPromise = new Promise(resolve => {
@@ -2579,8 +2598,8 @@
         updateCloudAccountUi();
         setCloudStatus("جارٍ الاتصال بـ Firebase…", "pending");
         const recordsQuery = activeSession.role === "agent"
-          ? cloudRecordsPath().where("recordKind", "in", ["appointments", "customScripts"])
-          : cloudRecordsPath();
+          ? cloudRecordsPath().where("recordKind", "in", ["appointments", "customScripts"]).limit(100)
+          : cloudRecordsPath().limit(100);
         cloudListener = recordsQuery.onSnapshot({ includeMetadataChanges: true }, snapshot => {
           if (snapshot.metadata?.fromCache && navigator.onLine) {
             setCloudStatus("جارٍ تحميل النسخة السحابية…", "pending");
@@ -3173,8 +3192,8 @@
         byId("lead-history-title").textContent = `سجل تفاعلات ${lead.name || "العميل"}`;
         renderLeadHistory(localEntries);
         byId("lead-history-dialog").showModal();
-        if (activeSession.ready && navigator.onLine) {
-          leadHistoryListener = companyLeadsPath().doc(leadId).collection("actions").orderBy("createdAt", "desc")
+        if (activeSession.ready && cloudDb && navigator.onLine) {
+          leadHistoryListener = companyLeadsPath().doc(leadId).collection("actions").orderBy("createdAt", "desc").limit(100)
             .onSnapshot(snapshot => {
               const remote = snapshot.docs.map(document => document.data());
               const remoteIds = new Set(remote.map(entry => entry.id));
