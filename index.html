@@ -1726,11 +1726,10 @@
          blockCompanySession({ role: "pending", status: "pending" }, "لم يكتمل ملف حسابك بعد. إذا كنت قد أنشأت الحساب للتو، انتظر لحظات ثم تحقق مجدداً");
          return;
          }
-        }
         const profile = snapshot.data();
         const status = profile.status || (["admin", "agent"].includes(profile.role) ? "active" : "pending");
         profile.status = status;
-        { /*
+        /*
         if (isPrimaryAdmin && (profile.role !== "admin" || !["approved", "active"].includes(status))) {
           try {
          await cloudFunctions.httpsCallable("bootstrapPrimaryAdmin")({});
