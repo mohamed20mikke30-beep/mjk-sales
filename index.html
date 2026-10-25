@@ -2457,18 +2457,22 @@
         cloudApp = existingApp || window.firebase.initializeApp(config);
         cloudAuth = cloudApp.auth();
         cloudDb = cloudApp.firestore();
-        cloudFunctions = cloudApp.functions("us-central1");
-        try {
-          await cloudDb.enablePersistence({ synchronizeTabs: true });
-        } catch (error) {
-          if (["failed-precondition", "unimplemented"].includes(error.code)) {
-            console.warn("Firestore offline cache is unavailable in this browser context; localStorage remains the offline source of truth.", error);
-            byId("cloud-account-status").textContent = "حُفظ الإعداد. سيبقى التخزين المحلي فعالًا؛ لم يسمح المتصفح بتمكين cache غير المتصلة في هذا السياق.";
-          } else {
-            console.error("Could not enable Firestore offline persistence:", error);
-            byId("cloud-account-status").textContent = `تعذر تهيئة التخزين المؤقت في Firestore: ${error.message || error.code}.`;
+        // Configure Firestore offline persistence/cache before any other Firestore
+        // method or service is created, so settings are not already frozen.
+        if (!(cloudDb?._delegate?._settingsFrozen)) {
+          try {
+            await cloudDb.enablePersistence({ synchronizeTabs: true });
+          } catch (error) {
+            if (["failed-precondition", "unimplemented"].includes(error.code)) {
+              console.warn("Firestore offline cache is unavailable in this browser context; localStorage remains the offline source of truth.", error);
+              byId("cloud-account-status").textContent = "حُفظ الإعداد. سيبقى التخزين المحلي فعالًا؛ لم يسمح المتصفح بتمكين cache غير المتصلة في هذا السياق.";
+            } else {
+              console.error("Could not enable Firestore offline persistence:", error);
+              byId("cloud-account-status").textContent = `تعذر تهيئة التخزين المؤقت في Firestore: ${error.message || error.code}.`;
+            }
           }
         }
+        cloudFunctions = cloudApp.functions("us-central1");
         if (!cloudInitPromise) {
           cloudInitPromise = new Promise(resolve => {
             cloudAuth.onAuthStateChanged(async user => {
